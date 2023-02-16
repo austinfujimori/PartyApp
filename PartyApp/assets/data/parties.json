@@ -1,0 +1,84 @@
+[{
+     "_id":{
+          "$oid": "63ac150514a21d1bd3ddae5e"
+     },
+     "image": "https://images.squarespace-cdn.com/content/v1/55ae5abde4b0d81697b581d2/1635959478185-WD2BWAN6AQSIMTIM4KIT/Best+hen+party+houses.jpg?format=1000w",
+     "description": "descipti n1desci pt ind escip  tinde sc ip tindes c iptin de sc iptind  esciptin desci ptind sciptindes cipti ndesciptin",
+     "address": "901 Hobart Street",
+     "price": 250,  
+     "isFeatured": true,
+     "category":{
+          "$oid": "5f15d5cdcb4a6642bddc0fe9"
+     },
+     "host":{
+          "$oid": "63a14f1fa88b34d3e54a2610",
+          "name": "John Mulley"
+     },
+     "dateCreated": "2022-12-28T10:05:57.566+00:00",
+     "dateOf": "April 2, 2022",
+     "capacity": 50,
+     "memberCount": 15
+},{
+     "_id":{
+          "$oid": "63ac150514a21d1bd3ddae6f"
+     },
+     "image": "https://www.interiorzine.com/wp-content/uploads/2015/02/party-house-pool-area.jpg",
+     "description": "desciptin 2",
+     "address": "An interesting address",
+     "price": 0,  
+     "isFeatured": true,
+     "category":{
+          "$oid": "5f15d5cdcb4a6642bddc0fe9"
+     },
+     "host":{
+          "$oid": "63a14f1fa88b34d3e54a2610",
+          "name": "Joe Bloe"
+     },
+     "dateCreated": "2022-12-28T10:05:57.566+00:00",
+     "dateOf": "December 5, 2022",
+     "capacity": 10,
+     "memberCount": 3
+},
+{
+     "_id":{
+          "$oid": "63ac150514a21d1bd3ddaf6g"
+     },
+     "image": "https://hips.hearstapps.com/digitalspyuk.cdnds.net/14/16/party-house-2.jpg",
+     "description": "desciptin 3desciptin 3desciptin 3desciptin 3desciptin 3desciptin 3desciptin 3desciptin 3desciptin 3",
+     "address": "ades 2",
+     "price": 0,  
+     "isFeatured": false,
+     "category":{
+          "$oid": "5f15d545f3a046427a1c26e2"
+     },
+     "host":{
+          "$oid": "63a14f1fa88b34d3e54a2610",
+          "name": "Joe Blo Number 2"
+     },
+     "dateCreated": "2022-12-28T10:05:57.566+00:00",
+     "dateOf": "March 1, 2021",
+     "capacity": 20,
+     "memberCount": 20
+},
+{
+     "_id":{
+          "$oid": "63ac150514a21d1bd3ddaf6j"
+     },
+     "image": "https://hips.hearstapps.com/digitalspyuk.cdnds.net/14/16/party-house-2.jpg",
+     "description": "desciptin 131tin 3desciptin 3desciptin 3desciptin 3des3233ciptin 3",
+     "address": "ades 2",
+     "price": 100, 
+     "isFeatured": true,
+     "category":{
+          "$oid": "5f15d545f3a046427a1c26e2"
+     },
+     "host":{
+          "$oid": "63a14f1fa88b34d3e54a2611",
+          "name": "Bob Joe"
+     },
+     "dateCreated": "2022-12-28T10:05:57.566+00:00",
+     "dateOf": "November 30, 2029",
+     "capacity": 30,
+     "memberCount": 20
+}
+]
