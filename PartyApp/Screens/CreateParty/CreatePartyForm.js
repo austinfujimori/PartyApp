@@ -7,7 +7,10 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Image
+  Image,
+  Platform,
+  RefreshControl,
+  ProgressViewIOSComponent,
 } from "react-native";
 
 import Input from "../../Shared/Form/Input";
@@ -21,6 +24,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import baseURL from "../../assets/common/baseUrl";
 
 import axios from "axios";
+
+import * as ImagePicker from "expo-image-picker";
 
 var { width, height } = Dimensions.get("window");
 
@@ -41,19 +46,109 @@ const CreatePartyForm = (props) => {
   const [dateOf, setDateOf] = useState();
   const [price, setPrice] = useState();
   const [image, setImage] = useState();
+  const [mainImage, setMainImage] = useState();
 
+  // useEffect(() => {
+
+  // axios
+  // .get(`${baseURL}categories`)
+  // .then((res) => setCategories(res.data))
+  // .catch((error) => alert("Error to load categories"))
+
+  //   return () => {
+  //     setCategories([])
+  //   }
+
+  // }, [])
 
   useEffect(() => {
-    //Categories
+    AsyncStorage.getItem("jwt")
+      .then((res) => {
+        setToken(res)
+      })
+      .catch((error) => console.log(error))
 
-    // axios
-    // .get(`${baseURL}categories`)
-    // .then((res) => setCategories(res.data))
-    // .catch((error) => alert("Error to load categories"))
+    //Image Picker
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+          alert("Please enable camera roll perrmissions in the settings.");
+        }
+      }
+    })();
+
+    return () => {};
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setMainImage(result.uri);
+      setImage(result.uri);
+    }
+  };
+
+  const addParty = () => {
+    if (
+      address == "" ||
+      description == "" ||
+      price == "" ||
+      capacity == "" ||
+      dateOf == ""
+    ) {
+      setError("Pllease fill in all of the fields");
+    }
+
+    let formData = new FormData();
+
+    formData.append("address", address);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("capacity", capacity);
+    formData.append("dateOf", dateOf);
 
 
-    
-  }, [])
+    formData.append("rating", rating)
+    formData.append("isFeatured", isFeatured)
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+
+    axios
+      .post(`${baseURL}parties`, formData, config)
+      .then((res) => {
+        if(res.status == 200 || res.status == 201) {
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "Party created",
+            text2: ""
+          })
+          setTimeout(() => {
+            props.navigation.navigate("Create Party Container")
+          }, 500)
+        }
+      })
+      .catch((error) => {
+        Toast.show({
+          topOffset: 60,
+          type: "error",
+          text1: "Something went wrong",
+          text2: "Please try again"
+        })
+      })
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,15 +159,12 @@ const CreatePartyForm = (props) => {
       </TouchableOpacity>
 
       <ScrollView style={styles.scrollContainer}>
-
-        <Image source={{uri: image}}
-        style={styles.image}
-        />
-        <TouchableOpacity>
-          <Text>
-            Set image
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: image }} style={styles.image} />
+          <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+            <Icon color="white" size={30} name="camera" />
+          </TouchableOpacity>
+        </View>
 
         <Input
           placeholder={"Address"}
@@ -104,7 +196,7 @@ const CreatePartyForm = (props) => {
           keyboardType={"numeric"}
           onChangeText={(text) => setCapacity(text)}
         />
-        
+
         <Input
           placeholder={"Date"}
           name={"DateOf"}
@@ -113,28 +205,20 @@ const CreatePartyForm = (props) => {
           onChangeText={(text) => setDateOf(text)}
         />
 
-
-
-
-
-
-
-
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => props.navigation.navigate("Create Party Form")}
+          onPress={() => addParty()}
         >
           <Text style={styles.createText}>Create</Text>
         </TouchableOpacity>
+
+        {err ? <Error message={err} /> : null}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  imageContainer:{
-    alignSelf: "center"
-  },
   container: {
     backgroundColor: "white",
   },
@@ -160,6 +244,31 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "#0093FD",
     fontWeight: "500",
+  },
+  imageContainer: {
+    width: 200,
+    height: 200,
+    borderStyle: "solid",
+    borderWidth: 3,
+    justifyContent: "center",
+    alignSelf: "center",
+    borderRadius: 100,
+    borderColor: "#C5C5C5",
+    elevation: 10,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 100,
+  },
+  imagePicker: {
+    position: "absolute",
+    right: 5,
+    bottom: 5,
+    backgroundColor: "grey",
+    padding: 8,
+    borderRadius: 100,
+    elevation: 20,
   },
 });
 
