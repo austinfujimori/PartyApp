@@ -34,8 +34,8 @@ function MyStack() {
                }}
                />
                <Stack.Screen 
-               name = "Checkout"
-               component={CheckoutNavigator}
+               name = "Confirm"
+               component={Confirm}
                options={{
                     title: "Check In",
                     cardStyle:{

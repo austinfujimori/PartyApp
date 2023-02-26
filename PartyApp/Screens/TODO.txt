@@ -1,0 +1,113 @@
+
+
+STYLES for SCREENS to-do list:
+
+NOTES
+
+BETA
+ - After adding party, navigate to select payment/confirm screen
+ - After ticket "check in" navigate immediately to pending screen
+
+ - Add Party        - Ticken Check-in
+     - Payment          - Pending Screen
+     - Confirm          
+
+MVP
+ - After adding party, add and navigate to tickets
+ - After ticket "check in" navigate to Ticket Checkout screen
+ - Ticket checkout screen:
+     - Payment
+     - Confirm
+     - Pending Screen
+
+
+
+########  ORDER OF PRIORITY   #######
+
+
+
+
+–––––––––FINAL (BETA)––––––––
+
+-- Create Party --
+
+
+
+-- Parties -- 
+
+PartyCard
+PartyContainer
+PartyList
+
+-- Tickets --
+
+
+
+-- User --
+
+Login
+SignUp
+
+
+–––––––––IN PROGRESS–––––––––
+
+-- Parties -- 
+
+SearchedParty
+SingleParty
+
+-- Tickets --
+
+Tickets
+
+-- User --
+
+UserProfile
+
+
+–––––––––––WAITING–––––––––––
+
+-- Create Party --
+
+CreatePartyForm
+
+Editor
+Orders
+
+ListItem
+CreatePartyContainer
+
+-- Tickets --
+
+Confirm
+Payment
+TicketCheckout
+
+
+–––––––––NOT ADDED–––––––––
+
+-- Tickets --
+
+Pending
+
+
+
+
+
+
+####### COLOR SCHEME ########
+
+Screen    |      Main      |     Secondary  |    Tab Navigator (BG/Active/Inactive)
+_________________________________________________________________________________
+
+Search    |    White       |     Orange     |    White  /  Orange  /  Grey
+
+Create    |    White       |     Orange     |    White  /  Orange  / Grey
+
+Tickets   |    Black       |  White/Orange  |    Darker Black / Orange / Grey
+
+Profile   |    White       |     Orange     |    White  /   Orange    / Grey
+
+Login     |    Orange      |      White
+
+SignUp    |    Black       |      White

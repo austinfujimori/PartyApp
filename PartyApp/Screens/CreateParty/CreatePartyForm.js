@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -7,7 +7,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Image,
+  ImageBackground,
   Platform,
   RefreshControl,
   ProgressViewIOSComponent,
@@ -27,18 +27,22 @@ import axios from "axios";
 
 import * as ImagePicker from "expo-image-picker";
 
+import mime from "mime";
+
 var { width, height } = Dimensions.get("window");
 
 const CreatePartyForm = (props) => {
   const [pickerValue, setPickerValue] = useState();
-  const [token, setToken] = useState();
+  // const [token, setToken] = useState();
+  const token = props.route.params.token;
+  const userProfile = props.route.params.userProfile;
   const [err, setError] = useState();
 
-  const [rating, setRating] = useState();
+  const [rating, setRating] = useState(0);
   const [memberCount, setMemberCount] = useState();
   const [isFeatured, setIsFeatured] = useState(false);
 
-  const [party, setParty] = useState(null);
+  const [item, setItem] = useState(null);
 
   const [description, setDescription] = useState();
   const [address, setAddress] = useState();
@@ -62,11 +66,19 @@ const CreatePartyForm = (props) => {
   // }, [])
 
   useEffect(() => {
-    AsyncStorage.getItem("jwt")
-      .then((res) => {
-        setToken(res)
-      })
-      .catch((error) => console.log(error))
+    if (!props.route.params.item) {
+      setItem(null);
+    } else {
+      setItem(props.route.params.item);
+      setPrice(props.route.params.item.price.toString());
+      setAddress(props.route.params.item.address);
+      setDescription(props.route.params.item.description);
+      setCapacity(props.route.params.item.capacity.toString());
+      setDateOf(props.route.params.item.dateOf);
+      setMainImage(props.route.params.item.mainImage);
+      setImage(props.route.params.item.image);
+      setMemberCount(props.route.params.item.memberCount.toString());
+    }
 
     //Image Picker
     (async () => {
@@ -96,17 +108,32 @@ const CreatePartyForm = (props) => {
   };
 
   const addParty = () => {
+
     if (
+      image == "" ||
       address == "" ||
       description == "" ||
       price == "" ||
       capacity == "" ||
       dateOf == ""
     ) {
-      setError("Pllease fill in all of the fields");
+      setError("Please fill in all of the fields");
     }
 
     let formData = new FormData();
+
+    const newImageUri = image.split("file:/").join("");
+
+    formData.append("image", {
+      uri: newImageUri,
+      type: mime.getType(newImageUri),
+      name: newImageUri.split("/").pop(),
+    });
+
+    if (!props.route.params.item) {
+      formData.append("host", userProfile._id);
+    }
+    
 
     formData.append("address", address);
     formData.append("description", description);
@@ -114,56 +141,90 @@ const CreatePartyForm = (props) => {
     formData.append("capacity", capacity);
     formData.append("dateOf", dateOf);
 
-
-    formData.append("rating", rating)
-    formData.append("isFeatured", isFeatured)
+    // formData.append("rating", rating);
+    // formData.append("isFeatured", isFeatured);
 
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`
-      }
-    }
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-    axios
-      .post(`${baseURL}parties`, formData, config)
-      .then((res) => {
-        if(res.status == 200 || res.status == 201) {
+    if (item !== null) {
+
+      // UPDATE PARTY
+      axios
+        .put(`${baseURL}parties/${item._id}`, formData, config)
+        .then((res) => {
+          if (res.status == 200 || res.status == 201) {
+            Toast.show({
+              topOffset: 60,
+              type: "success",
+              text1: "Party updated",
+              text2: "",
+            });
+            setTimeout(() => {
+              props.navigation.navigate("Create Party Container");
+            }, 500);
+          }
+        })
+        .catch((error) => {
           Toast.show({
             topOffset: 60,
-            type: "success",
-            text1: "Party created",
-            text2: ""
-          })
-          setTimeout(() => {
-            props.navigation.navigate("Create Party Container")
-          }, 500)
-        }
-      })
-      .catch((error) => {
-        Toast.show({
-          topOffset: 60,
-          type: "error",
-          text1: "Something went wrong",
-          text2: "Please try again"
+            type: "error",
+            text1: "Something went wrong",
+            text2: "Please try again",
+          });
+        });
+    } else {
+      // ADD NEW PARTY
+      axios
+        .post(`${baseURL}parties`, formData, config)
+        .then((res) => {
+          if (res.status == 200 || res.status == 201) {
+            Toast.show({
+              topOffset: 60,
+              type: "success",
+              text1: "Party created",
+              text2: "",
+            });
+            setTimeout(() => {
+              props.navigation.navigate("Create Party Container");
+            }, 500);
+          }
         })
-      })
+        .catch((error) => {
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: "Something went wrong",
+            text2: "Please try again",
+          });
+        });
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        onPress={() => props.navigation.navigate("Create Party Container")}
-      >
-        <Icon style={styles.backButton} name="close" color="black" size={30} />
-      </TouchableOpacity>
+    <View style={styles.container}>
 
       <ScrollView style={styles.scrollContainer}>
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: image }} style={styles.image} />
+
+        <View>
+          <ImageBackground source={{ uri: image ? (image):("https://cdn-icons-png.flaticon.com/512/2956/2956596.png") }} style={styles.image}>
+          <TouchableOpacity
+      style={styles.backButtonContainer}
+        onPress={() => props.navigation.navigate("Create Party Container")}
+      >
+        <Icon style={styles.backButton} name="leftcircle" color="orange" size={40} />
+      </TouchableOpacity>
+      
           <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-            <Icon color="white" size={30} name="camera" />
+            <Text style={styles.imagePickerText}>Select Image</Text>
           </TouchableOpacity>
+          </ImageBackground>
+
+
         </View>
 
         <Input
@@ -172,13 +233,22 @@ const CreatePartyForm = (props) => {
           id={"address"}
           value={address}
           onChangeText={(text) => setAddress(text)}
+          backgroundColor={"rgb(240,240,240)"}
+          inputColor={"black"}
+          placeholderTextColor={"gray"}
+          borderColor={"white"}
         />
+
         <Input
           placeholder={"Description"}
           name={"Description"}
           id={"description"}
           value={description}
           onChangeText={(text) => setDescription(text)}
+          backgroundColor={"rgb(240,240,240)"}
+          inputColor={"black"}
+          placeholderTextColor={"gray"}
+          borderColor={"white"}
         />
         <Input
           placeholder={"Price"}
@@ -187,6 +257,10 @@ const CreatePartyForm = (props) => {
           value={price}
           keyboardType={"numeric"}
           onChangeText={(text) => setPrice(text)}
+          backgroundColor={"rgb(240,240,240)"}
+          inputColor={"black"}
+          placeholderTextColor={"gray"}
+          borderColor={"white"}
         />
         <Input
           placeholder={"Capacity"}
@@ -195,6 +269,10 @@ const CreatePartyForm = (props) => {
           value={capacity}
           keyboardType={"numeric"}
           onChangeText={(text) => setCapacity(text)}
+          backgroundColor={"rgb(240,240,240)"}
+          inputColor={"black"}
+          placeholderTextColor={"gray"}
+          borderColor={"white"}
         />
 
         <Input
@@ -203,72 +281,74 @@ const CreatePartyForm = (props) => {
           id={"dateOf"}
           value={dateOf}
           onChangeText={(text) => setDateOf(text)}
+          backgroundColor={"rgb(240,240,240)"}
+          inputColor={"black"}
+          placeholderTextColor={"gray"}
+          borderColor={"white"}
         />
 
         <TouchableOpacity
           style={styles.buttonContainer}
           onPress={() => addParty()}
         >
-          <Text style={styles.createText}>Create</Text>
+          <Text style={styles.createText}>Confirm</Text>
         </TouchableOpacity>
 
         {err ? <Error message={err} /> : null}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  backButtonContainer:{
+    marginTop: 30,
+    marginLeft: 10
+  },
   container: {
-    backgroundColor: "white",
+    // backgroundColor: "rgb(159,162,170)",
+    backgroundColor: "white"
   },
-  scrollContainer: {
-    height: height,
-  },
+  scrollContainer: {},
   backButton: {
-    marginLeft: 10,
-    marginTop: 10,
+    marginLeft: 3,
+    marginTop: 15,
   },
+
   buttonContainer: {
-    alignItems: "center",
     alignSelf: "center",
-    marginTop: 40,
     borderWidth: 2,
-    padding: 5,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    borderColor: "#0093FD",
+    borderRadius: 33,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderColor: "orange",
+    marginTop: 20,
+    marginBottom: 30,
   },
   createText: {
+    color: "orange",
     fontFamily: "Avenir",
-    fontSize: 22,
-    color: "#0093FD",
-    fontWeight: "500",
+    fontSize: 18,
+    fontWeight: "600",
   },
-  imageContainer: {
-    width: 200,
-    height: 200,
-    borderStyle: "solid",
-    borderWidth: 3,
-    justifyContent: "center",
-    alignSelf: "center",
-    borderRadius: 100,
-    borderColor: "#C5C5C5",
-    elevation: 10,
-  },
+
   image: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 100,
+    width: width,
+    height: width,
+    alignSelf: "center",
+    justifyContent: "space-between"
   },
   imagePicker: {
-    position: "absolute",
-    right: 5,
-    bottom: 5,
-    backgroundColor: "grey",
-    padding: 8,
-    borderRadius: 100,
-    elevation: 20,
+    backgroundColor: "rgba(0,0,0, 0.6)",
+    padding: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imagePickerText: {
+    fontFamily: "Avenir",
+    color: "white",
+    fontSize: 17,
+    fontWeight: "500",
   },
 });
 

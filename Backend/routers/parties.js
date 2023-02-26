@@ -1,6 +1,6 @@
 const { Party } = require("../models/party");
 const express = require("express");
-const { Category } = require("../models/category");
+// const { Category } = require("../models/category");
 const router = require("express").Router();
 const mongoose = require("mongoose");
 const multer = require("multer");
@@ -33,13 +33,11 @@ const uploadOptions = multer({ storage: storage });
 router.get(`/`, async (req, res) => {
   //.select(name, etc.) to the end for specific things
 
-  let filter = {};
+  // if (req.query.categories) {
+  //   filter = { category: req.query.categories.split(",") };
+  // }
 
-  if (req.query.categories) {
-    filter = { category: req.query.categories.split(",") };
-  }
-
-  const partyList = await Party.find(filter).populate("category");
+  const partyList = await Party.find();
 
   if (!partyList) {
     res.status(500).json({ success: false });
@@ -56,9 +54,20 @@ router.get(`/:id`, async (req, res) => {
   res.send(party);
 });
 
+
+router.get(`/host/:id`, async (req, res) => {
+  const party = await Party.host.findById(req.params.id).populate("host");
+
+  if (!party) {
+    res.status(500).json({ success: false });
+  }
+  res.send(party);
+});
+
+
 router.post(`/`, uploadOptions.single("image"), async (req, res) => {
-  const category = await Category.findById(req.body.category);
-  if (!category) return res.status(400).send("invalid categry");
+  // const category = await Category.findById(req.body.category);
+  // if (!category) return res.status(400).send("invalid categry");
 
   // const fileName = req.file.fileName
   // const basePath = `${req.protocol}://${req.get("host")}/public/upload/`
@@ -75,12 +84,12 @@ router.post(`/`, uploadOptions.single("image"), async (req, res) => {
     description: req.body.description,
     address: req.body.address,
     price: req.body.price,
-    category: req.body.category,
+    // category: req.body.category,
     capacity: req.body.capacity,
     isFeatured: req.body.isFeatured,
     dateCreated: req.body.dateCreated,
     dateOf: req.body.dateOf,
-    memberCount: req.body.memberCount
+    memberCount: req.body.memberCount,
   });
 
   _party = await party.save();
@@ -88,51 +97,6 @@ router.post(`/`, uploadOptions.single("image"), async (req, res) => {
   if (!_party) return res.status(500).send("party cannot be created");
 
   res.send(_party);
-});
-
-router.put("/:id", uploadOptions.single("image"), async (req, res) => {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).send("Invalid Party Id");
-  }
-  const category = await Category.findById(req.body.category);
-  if (!category) return res.status(400).send("Invalid Category");
-
-  const party = await Party.findById(req.params.id);
-  if (!party) return res.status(400).send("Invalid Party!");
-
-  const file = req.file;
-  let imagepath;
-
-  if (file) {
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-    imagepath = `${basePath}${fileName}`;
-  } else {
-    imagepath = party.image;
-  }
-
-  const updatedParty = await Party.findByIdAndUpdate(
-    req.params.id,
-    {
-      host: req.body.host,
-      image: imagepath,
-      description: req.body.description,
-      address: req.body.address,
-      price: req.body.price,
-      category: req.body.category,
-      capacity: req.body.capacity,
-      isFeatured: req.body.isFeatured,
-      dateCreated: req.body.dateCreated,
-      dateOf: req.body.dateOf,
-      memberCount: req.body.memberCount
-    },
-    { new: true }
-  );
-
-  if (!updatedParty)
-    return res.status(500).send("the party cannot be updated!");
-
-  res.send(updatedParty);
 });
 
 router.delete("/:id", (req, res) => {
@@ -196,7 +160,7 @@ router.put(
     const party = await Party.findByIdAndUpdate(
       req.params.id,
       {
-        images: imagesPaths
+        images: imagesPaths,
       },
       { new: true }
     );
@@ -206,5 +170,93 @@ router.put(
     res.send(party);
   }
 );
+
+//new
+router.put("/:id", uploadOptions.single("image"), async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).send("Invalid Product Id");
+  }
+
+  const party = await Party.findById(req.params.id);
+  if (!party) return res.status(400).send("Invalid party!");
+
+  const file = req.file;
+  let imagepath;
+
+  if (file) {
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    imagepath = `${basePath}${fileName}`;
+  } else {
+    imagepath = party.image;
+  }
+
+  const updatedParty = await Party.findByIdAndUpdate(
+    req.params.id,
+    {
+      host: req.body.host,
+      image: imagepath,
+      description: req.body.description,
+      address: req.body.address,
+      price: req.body.price,
+      capacity: req.body.capacity,
+      isFeatured: req.body.isFeatured,
+      dateCreated: req.body.dateCreated,
+      dateOf: req.body.dateOf,
+      memberCount: req.body.memberCount,
+    },
+    { new: true }
+  );
+
+  if (!updatedParty)
+    return res.status(500).send("the party cannot be updated!").end()
+
+  res.send(updatedParty).end()
+});
+
+// router.put("/:id", uploadOptions.single("image"), async (req, res) => {
+//   if (!mongoose.isValidObjectId(req.params.id)) {
+//     return res.status(400).send("Invalid Party Id");
+//   }
+//   // const category = await Category.findById(req.body.category);
+//   // if (!category) return res.status(400).send("Invalid Category");
+//   const file = req.file;
+
+//   const party = await Party.findById(req.params.id);
+//   if (!party) return res.status(400).send("Invalid Party!");
+
+//   let imagepath;
+
+//   if (file) {
+//     const fileName = file.filename;
+//     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+//     imagepath = `${basePath}${fileName}`;
+//   } else {
+//     imagepath = party.image;
+//   }
+
+//   const updatedParty = await Party.findByIdAndUpdate(
+//     req.params.id,
+//     {
+//       host: req.body.host,
+//       image: imagepath,
+//       description: req.body.description,
+//       address: req.body.address,
+//       price: req.body.price,
+//       // category: req.body.category,
+//       capacity: req.body.capacity,
+//       isFeatured: req.body.isFeatured,
+//       dateCreated: req.body.dateCreated,
+//       dateOf: req.body.dateOf,
+//       memberCount: req.body.memberCount
+//     },
+//     { new: true }
+//   );
+
+//   if (!updatedParty)
+//     return res.status(500).send("the party cannot be updated!");
+
+//   res.send(updatedParty);
+// });
 
 module.exports = router;

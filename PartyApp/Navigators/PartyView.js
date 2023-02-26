@@ -15,7 +15,7 @@ function MyTabs() {
           tabBarActiveTintColor:"#ff7605",
           tabBarInactiveTintColor:"gray",
           tabBarStyle:{
-               backgroundColor: "black"
+               backgroundColor: "rgba(0,0,0,0.9)"
           },
           tabBarIndicatorStyle:{
                backgroundColor: "#ff7605",
@@ -25,8 +25,8 @@ function MyTabs() {
           tabBarLabelStyle: { fontSize: 15, fontWeight: "700", fontFamily:"Avenir" },
           }}
           >
-               <Tab.Screen name = "Editor" options={{title: "Edit"}} component={Editor} />
-               <Tab.Screen name = "Orders" options={{title: "Transactions"}} component={Orders} />
+               {/* <Tab.Screen name = "Editor" options={{title: "Edit"}} component={Editor} /> */}
+               <Tab.Screen name = "Orders" options={{title: "Transactions", backgroundColor: "black"}} component={Orders} />
           </Tab.Navigator>
      )
 }

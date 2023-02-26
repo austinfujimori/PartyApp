@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   FlatList,
+  Image,
 } from "react-native";
 
 import { connect } from "react-redux";
@@ -18,8 +19,7 @@ import Icon from "react-native-vector-icons";
 var { height, width } = Dimensions.get("window");
 
 const Tickets = (props) => {
-  const confirmItems = props.ticketsItems
-
+  const confirmItems = props
   return (
     <>
       {props.ticketsItems.length ? (
@@ -27,30 +27,21 @@ const Tickets = (props) => {
 
 
           <ScrollView style={styles.listContainer}>
-                      {/* <FlatList
-            data={props.ticketsItems}
-            renderItem={(data) => (
-              <TicketsItem
-                navigation={props.navigation}
-                key={item._id}
-                item={data}
-              />
-            )}
-            keyExtractor={(item) => item._id.$oid}
-          /> */}
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Tickets</Text>
           </View>
             {props.ticketsItems.map((data) => {
-              console.log(data)
               return (
-                
+                <View style={styles.ticketContainer}>
+                <Image key={Math.random()} source={{ uri: data.party.image }} style={styles.listItem} />
 
-                <View style={styles.listItem} key={Math.random()}>
+                <View style={styles.buttons}>
+
+
                   <View style={styles.textContainer}>
                     <View>
                       <Text style={styles.hostName}>
-                        {data.party.host.name}'s Party
+                        {data.party.host}'s Party
                       </Text>
                       <Text style={styles.dateOfText}>{data.party.dateOf}</Text>
                       <Text style={styles.priceText}>${data.party.price}</Text>
@@ -59,7 +50,14 @@ const Tickets = (props) => {
                    
                   </View>
 
-                  <View style={styles.buttons}>
+<View>
+<TouchableOpacity 
+                    onPress={() => props.navigation.navigate("Confirm", {confirmItems})}
+                    style={[styles.buttonContainer, {borderColor: "#0093FD", marginBottom: 10}]}>
+                         <Text style={styles.confirmText}>
+                         Check In
+                         </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity 
                     onPress={() => props.removeItemFromTickets(data)}
                     style={[styles.buttonContainer, {borderColor: "red"}]}>
@@ -68,16 +66,10 @@ const Tickets = (props) => {
                          </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
-                    onPress={() => props.navigation.navigate("Checkout", {confirmItems})}
-                    style={[styles.buttonContainer, {borderColor: "#0093FD"}]}>
-                         <Text style={styles.confirmText}>
-                         Check In
-                         </Text>
-                    </TouchableOpacity>
+
+                    </View>
                   </View>
                 </View>
-
               );
             })}
           </ScrollView>
@@ -113,17 +105,19 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const styles = StyleSheet.create({
+  ticketContainer: {
+  },
   noPartyText: {
     alignSelf: "center",
     marginTop: height / 9,
   },
   listItem: {
     alignSelf: "center",
+    borderRadius: 15,
     width: width / 1.1,
-    height: height / 5 + 10,
+    height: width / 1.3,
     marginTop: 15,
     backgroundColor: "white",
-    borderBottomWidth: 1,
     borderColor: "#C5C5C5",
     justifyContent: "center",
   },
@@ -151,6 +145,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginHorizontal: 20,
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -165,7 +160,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   buttons: {
-    marginHorizontal: 20,
+    marginRight: (width-width/1.1)/2 + 5,
     marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -175,8 +170,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     width: 100,
-    borderRadius: 22,
-    padding: 5,
+    borderRadius: 10,
+    padding: 10,
   },
   removeText: {
     fontFamily: "Avenir",

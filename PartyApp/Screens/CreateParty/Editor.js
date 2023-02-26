@@ -6,7 +6,7 @@ const Editor = (props) => {
      return(
           <View>
                <Text>
-                    Editor Screen
+                    Dont use for now
                </Text>
           </View>
      )

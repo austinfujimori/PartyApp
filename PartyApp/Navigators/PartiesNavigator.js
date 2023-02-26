@@ -6,6 +6,7 @@ import PartyContainer from "../Screens/Parties/PartyContainer";
 import SingleParty from "../Screens/Parties/SingleParty";
 import CheckoutNavigator from "./CheckoutNavigator";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,11 @@ function MyStack() {
         name="Checkout"
         component={CheckoutNavigator}
         options={({ route }) => ({ title: route.params.title })}
+      />
+
+<Stack.Screen
+        name="Ticket Checkout"
+        component={TicketCheckout}
       />
 
       <Stack.Screen

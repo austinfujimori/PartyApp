@@ -1,15 +1,23 @@
 import React from "react"
 
-import { View, Text } from "react-native"
+import { ScrollView, View, Text, StyleSheet } from "react-native"
 
 const Orders = (props) => {
      return(
-          <View>
-               <Text>
+          <ScrollView style={styles.container}>
+               <Text style={{color: "white"}}>
                     Orders Screen
                </Text>
-          </View>
+          </ScrollView>
      )
 }
+
+
+const styles = StyleSheet.create({
+     container: {
+          backgroundColor: "black"
+     }
+})
+
 
 export default Orders

@@ -18,6 +18,7 @@ var { width, height } = Dimensions.get("window");
 
 const PartyCard = (props) => {
   const {
+    username,
     host,
     memberCount,
     description,
@@ -58,13 +59,7 @@ const PartyCard = (props) => {
               style={styles.payButton}
               onPress={() => {
                 props.addItemToTickets(props);
-                Toast.show({
-                  topOffset: 60,
-                  type: "success",
-                  text1: `Added ${host.name}'s Party`
-                })
-                props.navigation.navigate("Checkout", {
-                  title: `${host.name}'s Party`,
+                props.navigation.navigate("Ticket Checkout", {username: username
                 });
               }}
             >
@@ -95,17 +90,17 @@ const mapDispatchToProps = (dispatch) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: width / 1.2,
+    width: width / 1.1,
     marginTop: 20,
   },
   textContainer: {
-    marginTop: width / 1.4 + 20,
+    marginTop: width / 1.3 + 20,
     marginLeft: 5,
   },
   image: {
     marginTop: 10,
-    width: width / 1.2,
-    height: width / 1.4,
+    width: width / 1.1,
+    height: width / 1.3,
     backgroundColor: "transparent",
     position: "absolute",
     borderRadius: 15,
@@ -122,7 +117,7 @@ const styles = StyleSheet.create({
     borderColor: "#ff7605",
     width: 100,
     borderRadius: 22,
-    padding: 5,
+    padding: 7,
     alignSelf: "flex-end",
     marginRight: 5,
   },

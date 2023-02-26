@@ -17,7 +17,7 @@ function MyStack() {
         headerTintColor: "white",
         headerColor: "#ff7605",
         headerStyle: {
-          backgroundColor: "black",
+          backgroundColor: "rgba(0,0,0,0.85)",
         },
         headerTitleStyle: {
           fontWeight: "500",
@@ -51,6 +51,7 @@ function MyStack() {
         name="Party View"
         component={PartyView}
         options={{
+          backgroundColor: "Black",
           title: "My Party",
         }}
       />

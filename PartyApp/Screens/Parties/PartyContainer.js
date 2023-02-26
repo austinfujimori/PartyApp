@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   SafeAreaView,
@@ -22,6 +22,9 @@ import SearchedParty from "./SearchedParty";
 import CategoryFilter from "./CategoryFilter";
 import Banner from "../../Shared/Banner";
 
+import AuthGlobal from "../../Context/store/AuthGlobal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 //CONNECTION
 import baseURL from "../../assets/common/baseUrl";
 import axios from "axios";
@@ -38,10 +41,30 @@ const PartyContainer = (props) => {
   const [initialState, setInitialState] = useState([]);
   const [loading, setLoading] = useState(true)
 
+  const context = useContext(AuthGlobal);
+  const [userProfile, setUserProfile] = useState();
+  
   //testing
 
   const [clicked, setClicked] = useState(false);
   const [fakeData, setFakeData] = useState();
+
+  useEffect(() => {
+    AsyncStorage.getItem("jwt")
+      .then((res) => {
+        axios
+          .get(`${baseURL}users/${context.stateUser.user.userId}`, {
+
+            headers: { Authorization: `Bearer ${res}` },
+          })
+          .then((user) => setUserProfile(user.data));
+      })
+      .catch((error) => console.log(error));
+
+    return () => {
+      setUserProfile();
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -134,8 +157,8 @@ const PartyContainer = (props) => {
               openList={openList}
               onBlur={onBlur}
             />
-            <TouchableOpacity style={styles.addPartyButton} onPress={() => props.navigation.navigate("Create Party Form")}>
-              <Feather name="plus" size={50} color="white" />
+            <TouchableOpacity style={styles.infoButton} onPress={() => props.navigation.navigate("Create Party Form")}>
+              <Feather name="info" size={40} color="white" />
             </TouchableOpacity>
           </View>
           {focus == true ? (
@@ -172,17 +195,24 @@ const PartyContainer = (props) => {
     
               <View style={styles.categoryContainer}>
                 <Text style={styles.recTitle}>Recommended</Text>
-                <FlatList
-                  data={parties}
-                  renderItem={({ item }) => (
-                    <PartyList
-                      navigation={props.navigation}
-                      key={item._id}
-                      item={item}
-                    />
-                  )}
-                  keyExtractor={(item) => item._id}
-                />
+                {
+                  userProfile ? (
+                    <FlatList
+                    data={parties}
+                    renderItem={({ item }) => (
+                      <PartyList
+                        navigation={props.navigation}
+                        key={item._id}
+                        item={item}
+                        username={userProfile._id}
+                      />
+                    )}
+                    keyExtractor={(item) => item._id}
+                  />
+                    
+                  ) : (null)
+                }
+
               </View>
             </ScrollView>
           )}
@@ -249,12 +279,14 @@ const styles = StyleSheet.create({
     // borderBottomWidth: 0.5,
     backgroundColor: "#fab164",
   },
-  addPartyButton: {
-    width: 50,
+  infoButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 15
   },
   mapPinButton: {
+    marginRight: 15,
     justifyContent: "center",
-    width: 50,
   },
 });
 export default PartyContainer;

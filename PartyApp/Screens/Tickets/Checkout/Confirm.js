@@ -18,6 +18,10 @@ var { width, height } = Dimensions.get("window");
 const Confirm = (props) => {
   const confirm = props.route.params
 
+
+
+  const partyDetails = (confirm.confirmItems.ticketsItems)[0].party
+
   const confirmOrder = () => {
     setTimeout(() => {
       props.clearTickets();
@@ -32,33 +36,26 @@ const Confirm = (props) => {
         {props.route.params ? (
           <View style={styles.textContainer}>
             <Text style={styles.attendeeText}>Attendee Name</Text>
-            <Text style={styles.nameText}>{confirm.order.order.name}</Text>
+            <Text style={styles.nameText}>{partyDetails.username}</Text>
 
             <Text style={styles.attendeeText}>Date</Text>
             <Text style={styles.nameText}>
-              {confirm.order.order.orderItems[0].party.dateOf}
+              {partyDetails.dateOf}
             </Text>
             <Text style={styles.attendeeText}>Host</Text>
             <Text style={styles.nameText}>
-              {confirm.order.order.orderItems[0].party.host.name}
+              {partyDetails.host}
             </Text>
             <Text style={styles.attendeeText}>Address</Text>
             <Text style={styles.nameText}>
-              {confirm.order.order.orderItems[0].party.address}
+              {partyDetails.address}
             </Text>
             <Text style={styles.attendeeText}>Price</Text>
             <Text style={styles.nameText}>
-              ${confirm.order.order.orderItems[0].party.price}
+              ${partyDetails.price}
             </Text>
-            {/* {confirm.order.order.orderItems.map((x) => {
-        return (
-          <View>
-            <Text>
-              {x.party.dateOf}
-            </Text>
-          </View>
-        )
-      })} */}
+
+
           </View>
         ) : null}
 

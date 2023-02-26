@@ -3,13 +3,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon2 from "react-native-vector-icons/Fontisto";
+import AuthGlobal from "../Context/store/AuthGlobal";
 
 //Stacks
 import PartiesNavigator from "./PartiesNavigator";
 import TicketsNavigator from "./TicketsNavigator";
 import CreatePartyNavigator from "./CreatePartyNavigator";
 import UserNavigator from "./UserNavigator";
-import AuthGlobal from "../Context/store/AuthGlobal";
+
 
 const Tab = createBottomTabNavigator();
 

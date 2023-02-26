@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     borderColor: "#ff7605",
     width: 100,
     borderRadius: 22,
-    padding: 5,
+    padding: 7,
     alignSelf: "flex-end",
     marginRight: 25,
   },

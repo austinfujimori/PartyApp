@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import axios from "axios";
@@ -47,13 +48,13 @@ const UserProfile = (props) => {
     <SafeAreaView>
       <ScrollView style={{ height: "100%" }}>
         <View style={styles.container}>
-          <Text
-          style={styles.nameText}
-          >{userProfile ? userProfile.name : ""}</Text>
+          <Text style={styles.nameText}>
+            {userProfile ? userProfile.name : ""}
+          </Text>
 
-          <Text
-          style={styles.emailText}
-          >{userProfile ? userProfile.email : ""}</Text>
+          <Text style={styles.emailText}>
+            {userProfile ? userProfile.email : ""}
+          </Text>
 
           <TouchableOpacity
             style={styles.signOutButton}
@@ -61,9 +62,7 @@ const UserProfile = (props) => {
               AsyncStorage.removeItem("jwt"), logoutUser(context.dispatch);
             }}
           >
-            <Text
-            style={styles.signOutText}
-            >Sign Out</Text>
+            <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -72,13 +71,12 @@ const UserProfile = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container:{
-  },
+  container: {},
   nameText: {
     marginLeft: 10,
     fontFamily: "Avenir",
     fontSize: 25,
-    paddingTop: 20
+    paddingTop: 20,
   },
   emailText: {
     marginLeft: 10,
@@ -89,7 +87,8 @@ const styles = StyleSheet.create({
   signOutText: {
     alignSelf: "center",
     fontFamily: "Avenir",
-    fontSize: 20
+    fontSize: 20,
+    color: "red"
   },
   signOutButton: {
     marginTop: 100,

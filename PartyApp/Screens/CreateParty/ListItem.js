@@ -85,7 +85,7 @@ const ListItem = (props) => {
             <TouchableOpacity
               style={[styles.editButton, {borderColor: "#0093FD"}]}
               onPress={() => [
-                props.navigation.navigate("Create Party Form", { item: props }),
+                props.navigation.navigate("Create Party Form", { item: props, token: props.token }),
                 setModalVisible(false),
               ]}
             >
@@ -107,11 +107,12 @@ const ListItem = (props) => {
 
 const styles = StyleSheet.create({
      buttonText: {
-          fontFamily: "Avenir",
-          fontSize: 18
+      fontFamily: "Avenir",
+      fontSize: 17,
+      fontWeight: "500"
      },
      editButton: {
-          padding: 8,
+          padding: 10,
           marginRight: 5,
           marginBottom: 10,
           borderWidth: 2,

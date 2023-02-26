@@ -7,11 +7,12 @@ var { width } = Dimensions.get("window");
 
 const PartyList = (props) => {
      const {item} = props
+     const username = props.username
   return (
       <TouchableOpacity onPress={() => {
         props.navigation.navigate("Party Detail", {item: item})
       }} style={{ width: width, alignItems: "center", backgroundColor: "transparent"}}>
-          <PartyCard {...item} navigation={props.navigation} />
+          <PartyCard {...item} username={username} navigation={props.navigation} />
       </TouchableOpacity>
   );
 };
