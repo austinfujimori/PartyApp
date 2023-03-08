@@ -28,7 +28,7 @@ function MyStack() {
       }}
     >
       <Stack.Screen
-        name="Parties"
+        name="PartiesMain"
         component={PartyContainer}
         options={{
           headerShown: false,

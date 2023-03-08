@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import {
   Text,
   View,
@@ -16,75 +16,152 @@ import * as actions from "../../Redux/Actions/ticketsActions";
 
 import Icon from "react-native-vector-icons";
 
+import axios from "axios";
+import baseURL from "../../assets/common/baseUrl";
+import { useFocusEffect } from "@react-navigation/native";
+import AuthGlobal from "../../Context/store/AuthGlobal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 var { height, width } = Dimensions.get("window");
 
 const Tickets = (props) => {
-  const confirmItems = props
+  const [ticketList, setTicketList] = useState();
+  const [token, setToken] = useState();
+
+  const context = useContext(AuthGlobal);
+  const [userProfile, setUserProfile] = useState();
+
+  useFocusEffect(
+    useCallback(() => {
+      // Get Token
+      AsyncStorage.getItem("jwt")
+        .then((res) => {
+          setToken(res);
+        })
+        .catch((error) => console.log(error));
+
+      //get user profile
+      AsyncStorage.getItem("jwt")
+        .then((res) => {
+          axios
+            .get(`${baseURL}users/${context.stateUser.user.userId}`, {
+              headers: { Authorization: `Bearer ${res}` },
+            })
+            .then((user) => {
+              //get ticketList from database
+              axios
+                .get(`${baseURL}orders/userorders/${user.data._id}`, {
+                  headers: { Authorization: `Bearer ${res}` },
+                })
+                .then((x) =>
+                  setTicketList(
+                    x.data
+                  )
+                );
+              // axios
+              //   .get(`${baseURL}orders`, {
+              //     headers: { Authorization: `Bearer ${res}` },
+              //   })
+              //   .then((x) =>
+              //     setTicketList(
+              //       x.data.filter((order) => order.user._id == user.data._id)
+              //     )
+              //   );
+            });
+        })
+        .catch((error) => console.log(error));
+
+      return () => {
+        setTicketList();
+        setUserProfile();
+      };
+    }, [])
+  );
+
+  const deleteOrder = (id) => {
+    axios
+      .delete(`${baseURL}orders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => console.log(error));
+    props.navigation.navigate("PartiesMain");
+  };
+
   return (
     <>
-      {props.ticketsItems.length ? (
+      {ticketList ? (
+        <>
+          {ticketList.length ? (
+            <ScrollView style={styles.listContainer}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>Tickets</Text>
+              </View>
+              {ticketList.map((data) => {
+                return (
+                  <View style={styles.ticketContainer}>
+                    <Image
+                      key={Math.random()}
+                      source={{ uri: data.party.image }}
+                      style={styles.listItem}
+                    />
 
+                    <View style={styles.buttons}>
+                      <View style={styles.textContainer}>
+                        <View>
+                          <Text style={styles.hostName}>
+                            {data.party.host}'s Party
+                          </Text>
+                          <Text style={styles.dateOfText}>
+                            {data.party.dateOf}
+                          </Text>
+                          <Text style={styles.priceText}>
+                            ${data.party.price}
+                          </Text>
+                        </View>
+                      </View>
 
-
-          <ScrollView style={styles.listContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Tickets</Text>
-          </View>
-            {props.ticketsItems.map((data) => {
-              return (
-                <View style={styles.ticketContainer}>
-                <Image key={Math.random()} source={{ uri: data.party.image }} style={styles.listItem} />
-
-                <View style={styles.buttons}>
-
-
-                  <View style={styles.textContainer}>
-                    <View>
-                      <Text style={styles.hostName}>
-                        {data.party.host}'s Party
-                      </Text>
-                      <Text style={styles.dateOfText}>{data.party.dateOf}</Text>
-                      <Text style={styles.priceText}>${data.party.price}</Text>
+                      <View>
+                        <TouchableOpacity
+                          onPress={() =>
+                            props.navigation.navigate("Confirm", {
+                              order: data,
+                            })
+                          }
+                          style={[
+                            styles.buttonContainer,
+                            { borderColor: "#0093FD", marginBottom: 10 },
+                          ]}
+                        >
+                          <Text style={styles.confirmText}>Check In</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => deleteOrder(data._id)}
+                          style={[
+                            styles.buttonContainer,
+                            { borderColor: "red" },
+                          ]}
+                        >
+                          <Text style={styles.removeText}>Remove</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-
-                   
                   </View>
+                );
+              })}
+            </ScrollView>
+          ) : (
+            <ScrollView>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>Tickets</Text>
+              </View>
 
-<View>
-<TouchableOpacity 
-                    onPress={() => props.navigation.navigate("Confirm", {confirmItems})}
-                    style={[styles.buttonContainer, {borderColor: "#0093FD", marginBottom: 10}]}>
-                         <Text style={styles.confirmText}>
-                         Check In
-                         </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                    onPress={() => props.removeItemFromTickets(data)}
-                    style={[styles.buttonContainer, {borderColor: "red"}]}>
-                         <Text style={styles.removeText}>
-                         Remove
-                         </Text>
-                    </TouchableOpacity>
-
-
-                    </View>
-                  </View>
-                </View>
-              );
-            })}
-          </ScrollView>
-    
-      ) : (
-        <ScrollView>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Tickets</Text>
-          </View>
-
-          <Text style={styles.noPartyText}>
-            No parties have been added yet.
-          </Text>
-        </ScrollView>
-      )}
+              <Text style={styles.noPartyText}>
+                No parties have been added yet.
+              </Text>
+            </ScrollView>
+          )}
+        </>
+      ) : null}
     </>
   );
 };
@@ -105,8 +182,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const styles = StyleSheet.create({
-  ticketContainer: {
-  },
+  ticketContainer: {},
   noPartyText: {
     alignSelf: "center",
     marginTop: height / 9,
@@ -125,19 +201,18 @@ const styles = StyleSheet.create({
     borderBottomColor: "orange",
     borderBottomWidth: 5,
     width: width / 2,
-    marginLeft: width-width/1.1,
+    marginLeft: width - width / 1.1,
     marginTop: 5,
   },
   title: {
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "44", 
+    fontSize: "44",
     fontWeight: "500",
-    height: height/7,
-    paddingTop: height/13
+    height: height / 7,
+    paddingTop: height / 13,
   },
-  listContainer: {
-  },
+  listContainer: {},
   hostName: {
     fontFamily: "Avenir",
     fontSize: 30,
@@ -157,10 +232,10 @@ const styles = StyleSheet.create({
   priceText: {
     fontFamily: "Avenir",
     fontSize: 20,
-    marginTop: 10
+    marginTop: 10,
   },
   buttons: {
-    marginRight: (width-width/1.1)/2 + 5,
+    marginRight: (width - width / 1.1) / 2 + 5,
     marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -177,13 +252,13 @@ const styles = StyleSheet.create({
     fontFamily: "Avenir",
     fontSize: 17,
     color: "red",
-    fontWeight: "500"
+    fontWeight: "500",
   },
   confirmText: {
     fontFamily: "Avenir",
     fontSize: 17,
     color: "#0093FD",
-    fontWeight: "500"
+    fontWeight: "500",
   },
 });
 

@@ -53,7 +53,7 @@ const ListItem = (props) => {
       </Modal> */}
 
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("Party View")}
+        onPress={() => props.navigation.navigate("Party View", {screen: "Orders", params: { token: props.token, thisParty: props._id} })}
         style={styles.container}
       >
         <Image

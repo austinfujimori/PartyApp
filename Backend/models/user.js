@@ -40,7 +40,7 @@ const userSchema = mongoose.Schema({
      country:{
           type: String,
           default: ""
-     },
+     }
 });
 
 userSchema.virtual("id").get(function () {

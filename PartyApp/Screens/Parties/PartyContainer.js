@@ -157,7 +157,7 @@ const PartyContainer = (props) => {
               openList={openList}
               onBlur={onBlur}
             />
-            <TouchableOpacity style={styles.infoButton} onPress={() => props.navigation.navigate("Create Party Form")}>
+            <TouchableOpacity style={styles.infoButton}>
               <Feather name="info" size={40} color="white" />
             </TouchableOpacity>
           </View>

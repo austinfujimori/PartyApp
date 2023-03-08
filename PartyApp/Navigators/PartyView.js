@@ -4,7 +4,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 
 //Screens
 import Orders from "../Screens/CreateParty/Oders"
-import Editor from "../Screens/CreateParty/Editor"
+import ConfirmedOrders from "../Screens/CreateParty/ConfirmedOrders"
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -25,8 +25,8 @@ function MyTabs() {
           tabBarLabelStyle: { fontSize: 15, fontWeight: "700", fontFamily:"Avenir" },
           }}
           >
-               {/* <Tab.Screen name = "Editor" options={{title: "Edit"}} component={Editor} /> */}
-               <Tab.Screen name = "Orders" options={{title: "Transactions", backgroundColor: "black"}} component={Orders} />
+               <Tab.Screen name = "Orders" options={{title: "Pending"}} component={Orders} />
+               <Tab.Screen name = "Confirmed Orders" options={{title: "Confirmed"}} component={ConfirmedOrders} />
           </Tab.Navigator>
      )
 }

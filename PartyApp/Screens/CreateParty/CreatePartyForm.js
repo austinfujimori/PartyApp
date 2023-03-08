@@ -39,7 +39,6 @@ const CreatePartyForm = (props) => {
   const [err, setError] = useState();
 
   const [rating, setRating] = useState(0);
-  const [memberCount, setMemberCount] = useState();
   const [isFeatured, setIsFeatured] = useState(false);
 
   const [item, setItem] = useState(null);
@@ -77,7 +76,6 @@ const CreatePartyForm = (props) => {
       setDateOf(props.route.params.item.dateOf);
       setMainImage(props.route.params.item.mainImage);
       setImage(props.route.params.item.image);
-      setMemberCount(props.route.params.item.memberCount.toString());
     }
 
     //Image Picker
@@ -108,7 +106,6 @@ const CreatePartyForm = (props) => {
   };
 
   const addParty = () => {
-
     if (
       image == "" ||
       address == "" ||
@@ -133,7 +130,6 @@ const CreatePartyForm = (props) => {
     if (!props.route.params.item) {
       formData.append("host", userProfile._id);
     }
-    
 
     formData.append("address", address);
     formData.append("description", description);
@@ -152,7 +148,6 @@ const CreatePartyForm = (props) => {
     };
 
     if (item !== null) {
-
       // UPDATE PARTY
       axios
         .put(`${baseURL}parties/${item._id}`, formData, config)
@@ -207,24 +202,35 @@ const CreatePartyForm = (props) => {
 
   return (
     <View style={styles.container}>
-
       <ScrollView style={styles.scrollContainer}>
-
         <View>
-          <ImageBackground source={{ uri: image ? (image):("https://cdn-icons-png.flaticon.com/512/2956/2956596.png") }} style={styles.image}>
-          <TouchableOpacity
-      style={styles.backButtonContainer}
-        onPress={() => props.navigation.navigate("Create Party Container")}
-      >
-        <Icon style={styles.backButton} name="leftcircle" color="orange" size={40} />
-      </TouchableOpacity>
-      
-          <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-            <Text style={styles.imagePickerText}>Select Image</Text>
-          </TouchableOpacity>
+          <ImageBackground
+            source={{
+              uri: image
+                ? image
+                : "https://cdn-icons-png.flaticon.com/512/2956/2956596.png",
+            }}
+            style={styles.image}
+            imageStyle={image ? styles.image : styles.iconImage}
+          >
+            <TouchableOpacity
+              style={styles.backButtonContainer}
+              onPress={() =>
+                props.navigation.navigate("Create Party Container")
+              }
+            >
+              <Icon
+                style={styles.backButton}
+                name="leftcircle"
+                color="rgb(240,240,240)"
+                size={40}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+              <Text style={styles.imagePickerText}>Select Image</Text>
+            </TouchableOpacity>
           </ImageBackground>
-
-
         </View>
 
         <Input
@@ -301,18 +307,22 @@ const CreatePartyForm = (props) => {
 };
 
 const styles = StyleSheet.create({
-  backButtonContainer:{
+  backButtonContainer: {
     marginTop: 30,
-    marginLeft: 10
+    marginLeft: 10,
   },
   container: {
     // backgroundColor: "rgb(159,162,170)",
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   scrollContainer: {},
   backButton: {
     marginLeft: 3,
     marginTop: 15,
+  },
+  iconImage: {
+    width: width,
+    height: width,
   },
 
   buttonContainer: {
@@ -336,7 +346,7 @@ const styles = StyleSheet.create({
     width: width,
     height: width,
     alignSelf: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   imagePicker: {
     backgroundColor: "rgba(0,0,0, 0.6)",

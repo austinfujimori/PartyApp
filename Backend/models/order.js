@@ -1,13 +1,15 @@
 const mongoose = require("mongoose");
 
 const orderSchema = mongoose.Schema({
-  orderItems: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "OrderItem",
-      required: true,
-    },
-  ],
+  // orderItem: 
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "OrderItem",
+  //   },
+  party: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Party"
+  },
   status: {
     type: String,
     required: true,
@@ -15,6 +17,7 @@ const orderSchema = mongoose.Schema({
   },
   totalPrice: {
     type: Number,
+    default: 0
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +25,7 @@ const orderSchema = mongoose.Schema({
   },
   dateOrdered: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   }
 });
 

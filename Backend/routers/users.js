@@ -35,6 +35,7 @@ router.post("/", async (req, res) => {
     zip: req.body.zip,
     city: req.body.city,
     country: req.body.country,
+    orders: req.body.orders
   });
 
   user = await user.save();
@@ -67,6 +68,7 @@ router.put("/:id", async (req, res) => {
       zip: req.body.zip,
       city: req.body.city,
       country: req.body.country,
+      orders: req.body.orders
     },
     { new: true }
   );
@@ -113,6 +115,7 @@ router.post("/register", async (req, res) => {
     zip: req.body.zip,
     city: req.body.city,
     country: req.body.country,
+    orders: req.body.orders
   });
 
   user = await user.save();
@@ -150,5 +153,43 @@ router.delete("/:id", (req, res) => {
       return res.status(400).json({ success: false, error: err });
     });
 });
+
+//add new order for user
+// router.put("/newOrder/:id", async (req, res) => {
+//   const userExist = await User.findById(req.params.id);
+
+//   console.log(req.body)
+  
+//   const user = await User.findByIdAndUpdate(
+//     req.params.id,
+//     {
+//       orders: req.body
+//     },
+//     { new: true }
+//   );
+
+//   if (!user) return res.status(400).send("the user cannot be created!");
+
+//   res.send(user);
+// });
+
+//delete order for user
+// router.put("/newOrder/:id", async (req, res) => {
+//   const userExist = await User.findById(req.params.id);
+
+
+//   const user = await User.findByIdAndUpdate(
+//     req.params.id,
+//     {
+//       orders: req.body.orders
+//     },
+//     { new: true }
+//   );
+
+//   if (!user) return res.status(400).send("the user cannot be created!");
+
+//   res.send(user);
+// });
+
 
 module.exports = router;

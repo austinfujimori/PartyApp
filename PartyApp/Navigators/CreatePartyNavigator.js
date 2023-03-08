@@ -52,7 +52,7 @@ function MyStack() {
         component={PartyView}
         options={{
           backgroundColor: "Black",
-          title: "My Party",
+          title: "Guests",
         }}
       />
     </Stack.Navigator>

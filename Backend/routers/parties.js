@@ -55,15 +55,6 @@ router.get(`/:id`, async (req, res) => {
 });
 
 
-router.get(`/host/:id`, async (req, res) => {
-  const party = await Party.host.findById(req.params.id).populate("host");
-
-  if (!party) {
-    res.status(500).json({ success: false });
-  }
-  res.send(party);
-});
-
 
 router.post(`/`, uploadOptions.single("image"), async (req, res) => {
   // const category = await Category.findById(req.body.category);
@@ -258,5 +249,15 @@ router.put("/:id", uploadOptions.single("image"), async (req, res) => {
 
 //   res.send(updatedParty);
 // });
+
+// get the party given party host
+router.get(`/party/:userid`, async (req, res) => {
+  const userParty = await Party.find({ host: req.params.userid })
+
+  if (!userParty) {
+    res.status(500).json({ success: false });
+  }
+  res.send(userParty);
+});
 
 module.exports = router;
