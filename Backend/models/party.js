@@ -42,7 +42,7 @@ const partySchema = mongoose.Schema({
     default: Date.now,
   },
   dateOf: {
-    type: String,
+    type: Date,
   },
   memberCount: {
     type: Number,

@@ -8,7 +8,10 @@ const multer = require("multer");
 router.get(`/`, async (req, res) => {
   const orderList = await Order.find()
     .populate("user")
-    .populate("party")
+    .populate({
+      path: "party",
+      populate: { path: 'host' }
+    })
     .sort({ dateOrdered: -1 });
   //sort newest to oldest => -1
 
@@ -21,6 +24,10 @@ router.get(`/`, async (req, res) => {
 router.get(`/:id`, async (req, res) => {
   const order = await Order.findById(req.params.id)
     .populate("user")
+    .populate({
+      path: "party",
+      populate: { path: 'host' }
+    })
     .sort({ dateOrdered: -1 });
     // .populate({
     //   path: "orderItems",
@@ -165,7 +172,11 @@ router.get(`/get/count`, async (req, res) => {
 // get the orders given a user ID
 router.get(`/userorders/:userid`, async (req, res) => {
   const userOrderList = await Order.find({ user: req.params.userid })
-    .populate("party")
+  .populate({
+    path: "party",
+    populate: { path: 'host' }
+  })
+    .populate("user")
     .sort({ dateOrdered: -1 });
 
   if (!userOrderList) {
@@ -179,7 +190,10 @@ router.get(`/userorders/:userid`, async (req, res) => {
 // get the orders given a party
 router.get(`/partyOrders/:partyid`, async (req, res) => {
   const partyOrderList = await Order.find({ party: req.params.partyid })
-    .populate("party")
+  .populate({
+    path: "party",
+    populate: { path: 'host' }
+  })
     .populate("user")
     .sort({ dateOrdered: -1 });
 

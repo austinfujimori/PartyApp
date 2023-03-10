@@ -37,7 +37,7 @@ router.get(`/`, async (req, res) => {
   //   filter = { category: req.query.categories.split(",") };
   // }
 
-  const partyList = await Party.find();
+  const partyList = await Party.find().populate("host");
 
   if (!partyList) {
     res.status(500).json({ success: false });
@@ -252,12 +252,33 @@ router.put("/:id", uploadOptions.single("image"), async (req, res) => {
 
 // get the party given party host
 router.get(`/party/:userid`, async (req, res) => {
-  const userParty = await Party.find({ host: req.params.userid })
+  const userParty = await Party.find({ host: req.params.userid }).populate("host")
 
   if (!userParty) {
     res.status(500).json({ success: false });
   }
   res.send(userParty);
 });
+
+// increase member count given party id
+router.put("/memberCount/:id", async (req, res) => {
+  const party = await Party.findById(
+    req.params.id
+  );
+  party.memberCount++
+  party.save()
+});
+
+
+
+// decrease member count given party id
+router.put("/decreaseMemberCount/:id", async (req, res) => {
+  const party = await Party.findById(
+    req.params.id
+  );
+  party.memberCount--
+  party.save()
+});
+
 
 module.exports = router;

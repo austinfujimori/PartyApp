@@ -29,6 +29,10 @@ import * as ImagePicker from "expo-image-picker";
 
 import mime from "mime";
 
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+import Moment from "moment"
+
 var { width, height } = Dimensions.get("window");
 
 const CreatePartyForm = (props) => {
@@ -46,10 +50,22 @@ const CreatePartyForm = (props) => {
   const [description, setDescription] = useState();
   const [address, setAddress] = useState();
   const [capacity, setCapacity] = useState();
-  const [dateOf, setDateOf] = useState();
+
   const [price, setPrice] = useState();
   const [image, setImage] = useState();
   const [mainImage, setMainImage] = useState();
+
+  //DATE
+  const [dateOf, setDateOf] = useState(new Date());
+  const [mode, setMode] = useState("date");
+  const [show, setShow] = useState(false);
+  const [locked, setLocked] = useState(false)
+
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDateOf(currentDate);
+  };
 
   // useEffect(() => {
 
@@ -73,9 +89,9 @@ const CreatePartyForm = (props) => {
       setAddress(props.route.params.item.address);
       setDescription(props.route.params.item.description);
       setCapacity(props.route.params.item.capacity.toString());
-      setDateOf(props.route.params.item.dateOf);
       setMainImage(props.route.params.item.mainImage);
       setImage(props.route.params.item.image);
+      setLocked(true)
     }
 
     //Image Picker
@@ -135,11 +151,14 @@ const CreatePartyForm = (props) => {
     formData.append("description", description);
     formData.append("price", price);
     formData.append("capacity", capacity);
-    formData.append("dateOf", dateOf);
+
+    if (!locked){
+      formData.append("dateOf", Moment(dateOf).format("YYYY-MM-DD") + "T00:00:00.000+00:00");
+    }
+    
 
     // formData.append("rating", rating);
     // formData.append("isFeatured", isFeatured);
-
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -281,17 +300,23 @@ const CreatePartyForm = (props) => {
           borderColor={"white"}
         />
 
-        <Input
-          placeholder={"Date"}
-          name={"DateOf"}
-          id={"dateOf"}
+        {locked ? (
+
+          <Text>
+            You cannot change the date of your party.
+          </Text>
+        ):(
+          <DateTimePicker
+          testID="dateOf"
           value={dateOf}
-          onChangeText={(text) => setDateOf(text)}
-          backgroundColor={"rgb(240,240,240)"}
-          inputColor={"black"}
-          placeholderTextColor={"gray"}
-          borderColor={"white"}
+          mode={mode}
+          is24Hour={true}
+          onChange={onChangeDate}
         />
+        )
+
+        }
+        
 
         <TouchableOpacity
           style={styles.buttonContainer}

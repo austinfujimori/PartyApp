@@ -22,6 +22,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import AuthGlobal from "../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import Moment from 'moment';
+
 var { height, width } = Dimensions.get("window");
 
 const Tickets = (props) => {
@@ -78,14 +80,44 @@ const Tickets = (props) => {
     }, [])
   );
 
-  const deleteOrder = (id) => {
+  const deleteOrder = (id, partyID, memberCount) => {
+    //delete order
     axios
       .delete(`${baseURL}orders/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .catch((error) => console.log(error));
-    props.navigation.navigate("PartiesMain");
+
+
+    // decrease party member count by 1
+    const partyConfig = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .put(
+        `${baseURL}parties/decreaseMemberCount/${partyID}`,
+        memberCount,
+        partyConfig
+      )
+      .then((res) => {
+        if (res.status == 200 || res.status == 201) {
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "Party Updatd",
+          });
+        }
+      });
+
+      props.navigation.navigate("PartiesMain");
   };
+
+
+  Moment.locale('de');
+
 
   return (
     <>
@@ -97,6 +129,7 @@ const Tickets = (props) => {
                 <Text style={styles.title}>Tickets</Text>
               </View>
               {ticketList.map((data) => {
+
                 return (
                   <View style={styles.ticketContainer}>
                     <Image
@@ -109,10 +142,11 @@ const Tickets = (props) => {
                       <View style={styles.textContainer}>
                         <View>
                           <Text style={styles.hostName}>
-                            {data.party.host}'s Party
+                            {data.party.host.name}'s Party
                           </Text>
                           <Text style={styles.dateOfText}>
-                            {data.party.dateOf}
+                          {Moment(data.party.dateOf).format('ddd, MMMM Do')}
+                            
                           </Text>
                           <Text style={styles.priceText}>
                             ${data.party.price}
@@ -135,7 +169,7 @@ const Tickets = (props) => {
                           <Text style={styles.confirmText}>Check In</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          onPress={() => deleteOrder(data._id)}
+                          onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
                           style={[
                             styles.buttonContainer,
                             { borderColor: "red" },

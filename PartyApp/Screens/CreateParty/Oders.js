@@ -52,12 +52,13 @@ const Orders = (props) => {
 
   return (
     <ScrollView style={styles.container}>
+                
       {orderList ? (
         <>
           {orderList.length ? (
           <>
-
               {orderList.map((data) => {
+                
                 return (
                     <View style={styles.orderContainer}>
                       <Text style={styles.default}>Name: {data.user.name}</Text>

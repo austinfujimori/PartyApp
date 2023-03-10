@@ -12,6 +12,8 @@ import {
   ImageBackground,
 } from "react-native";
 
+import Moment from 'moment';
+
 import Icon from "react-native-vector-icons/Ionicons";
 
 
@@ -19,6 +21,8 @@ var { height, width } = Dimensions.get("window");
 
 const ListItem = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
+
+  Moment.locale('de');
   return (
     <View>
       {/* <Modal
@@ -66,7 +70,7 @@ const ListItem = (props) => {
 
         <View style={styles.insideText}>
           <View>
-            <Text style={styles.dateOf}>{props.dateOf}</Text>
+            <Text style={styles.dateOf}>{Moment(props.dateOf).format('ddd, MMMM Do')}</Text>
             <Text style={styles.address}>{props.address}</Text>
             <Text
               style={styles.description}
@@ -155,7 +159,7 @@ const styles = StyleSheet.create({
   },
   dateOf: {
     fontFamily: "Avenir",
-    fontSize: 20,
+    fontSize: 30,
     borderBottomWidth: 1,
   },
   address: {

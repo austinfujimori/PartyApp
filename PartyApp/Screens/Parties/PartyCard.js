@@ -14,6 +14,8 @@ import Toast from "react-native-toast-message"
 import { connect } from "react-redux";
 import * as actions from "../../Redux/Actions/ticketsActions";
 
+import Moment from 'moment';
+
 var { width, height } = Dimensions.get("window");
 
 const PartyCard = (props) => {
@@ -31,6 +33,8 @@ const PartyCard = (props) => {
     address,
   } = props;
 
+  Moment.locale('de');
+
   return (
     <View style={styles.container}>
       <Image style={styles.image} resizeMode="cover" source={{ uri: image }} />
@@ -39,7 +43,7 @@ const PartyCard = (props) => {
         <View style={styles.SideBySide}>
           <View>
             <Text style={styles.date}>
-              {dateOf}
+            {Moment(dateOf).format('ddd, MMMM Do')}
               {/* {dateOf.length > 15 ? dateOf.substring(0, 15 - 3) + "..." : dateOf} */}
             </Text>
             <Text style={styles.membersText}>
@@ -49,9 +53,9 @@ const PartyCard = (props) => {
             <Text style={styles.distanceText}>{address}</Text>
 
             <Text style={styles.hostText}>
-              {host.length > 15
-                ? host.substring(0, 15 - 3) + "..."
-                : host}
+              {host.name.length > 15
+                ? host.name.substring(0, 15 - 3) + "..."
+                : host.name}
             </Text>
           </View>
 

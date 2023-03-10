@@ -22,6 +22,8 @@ import baseURL from "../../../assets/common/baseUrl";
 import AuthGlobal from "../../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import Moment from 'moment';
+
 var { width, height } = Dimensions.get("window");
 
 const Confirm = (props) => {
@@ -54,17 +56,22 @@ const Confirm = (props) => {
     alert("put request and change status to \"user confirmed\"")
   };
 
+  Moment.locale('de');
+
   return (
     <ScrollView>
       <View style={styles.mainContainer}>
             <View style={styles.textContainer}>
               <Text style={styles.attendeeText}>Attendee Name</Text>
-              <Text style={styles.nameText}>{order.user._id}</Text>
+              <Text style={styles.nameText}>{order.user.name}</Text>
 
               <Text style={styles.attendeeText}>Date</Text>
-              <Text style={styles.nameText}>{order.party.dateOf}</Text>
+              <Text style={styles.nameText}>
+              
+              {Moment(order.party.dateOf).format('ddd, MMMM Do')}
+              </Text>
               <Text style={styles.attendeeText}>Host</Text>
-              <Text style={styles.nameText}>{order.party.host}</Text>
+              <Text style={styles.nameText}>{order.party.host.name}</Text>
               <Text style={styles.attendeeText}>Address</Text>
               <Text style={styles.nameText}>{order.party.address}</Text>
               <Text style={styles.attendeeText}>Price</Text>
@@ -72,7 +79,7 @@ const Confirm = (props) => {
 
               <Text style={styles.attendeeText}>Date Ordered:</Text>
 
-              <Text style={styles.nameText}>{order.dateOrdered}</Text>
+              <Text style={styles.nameText}>{Moment(order.dateOrdered).format('ddd, MMMM Do')}</Text>
 
               {/* <Text style={styles.attendeeText}>Card:</Text>
 
