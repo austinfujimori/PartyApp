@@ -8,6 +8,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import baseURL from "../../assets/common/baseUrl";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 var { height, width } = Dimensions.get("window");
 
@@ -24,6 +25,7 @@ const Orders = (props) => {
       };
     }, [])
   );
+  
 
   const getOrders = () => {
     const config = {
@@ -50,29 +52,112 @@ const Orders = (props) => {
     .catch((error) => console.log(error));
   };
 
+  const deleteOrder = (id, partyID, memberCount) => {
+    //delete order
+    axios
+      .delete(`${baseURL}orders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => console.log(error));
+
+
+    // decrease party member count by 1
+    const partyConfig = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .put(
+        `${baseURL}parties/decreaseMemberCount/${partyID}`,
+        memberCount,
+        partyConfig
+      )
+      .then((res) => {
+        if (res.status == 200 || res.status == 201) {
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "Party Updatd",
+          });
+        }
+      });
+
+      props.navigation.navigate("Create Party Container");
+  };
+  
   return (
     <ScrollView style={styles.container}>
                 
       {orderList ? (
         <>
           {orderList.length ? (
-          <>
-              {orderList.map((data) => {
-                
+            <>
+
+            <Text style={styles.title}>
+              Pending
+            </Text>
+
+            {orderList.map((data) => {
+                if(data.status == "user confirmed")
                 return (
                     <View style={styles.orderContainer}>
-                      <Text style={styles.default}>Name: {data.user.name}</Text>
-                      <Text style={styles.default}>
-                        Amount Paid: {data.totalPrice}
-                      </Text>
-                      {/* <Text style={styles.default}>Party: {data.party._id}</Text> */}
-                      <Text style={styles.default}>Status: {data.status}</Text>
+                      <Text style={styles.default}>{data.user.name}</Text>
+                      <TouchableOpacity style={styles.confirmButton}>
+                        <Text style={styles.confirmText}>
+                          
+                          Confirm</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity 
+                      
+                      onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
+                      
+                      style={styles.removeButton}>
+                        <Text 
+                        
+                      
+                        style={styles.removeText}>
+                          
+                          Remove</Text>
+                      </TouchableOpacity>
+
+
+
+
+                    </View>
+                );
+              })}
+              <Text style={styles.title}>
+              Waiting
+            </Text>
+
+              {orderList.map((data) => {
+                if(data.status == "Pending")
+                return (
+                    <View style={styles.orderContainer}>
+                      <Text style={styles.default}>{data.user.name}</Text>
+
+
+
+                      <TouchableOpacity 
+                      
+                      onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
+                      
+                      style={styles.removeButton}>
+                        <Text style={styles.removeText}>
+                          
+                          Remove</Text>
+                      </TouchableOpacity>
+
+
                     </View>
                 );
               })}
 
-
-              </>
+            
+            </>
           ) : (
 
               <Text style={styles.default}>
@@ -97,24 +182,40 @@ const styles = StyleSheet.create({
   default: {
     fontFamily: "Avenir",
     color: "white",
-    size: 20,
+    fontSize: 20,
   },
-  titleContainer: {
-    borderBottomColor: "orange",
-    borderBottomWidth: 5,
-    width: width / 2,
-    marginLeft: width - width / 1.1,
-    marginTop: 5,
-  },
+  confirmButton: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "orange",
+    padding: 20,
+    },
+    confirmText: {
+      fontFamily: "Avenir",
+      color: "orange",
+      fontSize: 20,
+    },
+    removeButton: {
+      alignItems: "center",
+      borderWidth: 2,
+      width: 100,
+      borderRadius: 10,
+      padding: 10,
+      },
+      removeText: {
+        fontFamily: "Avenir",
+        color: "red",
+        fontSize: 20,
+      },
   title: {
     color: "white",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "44",
+    fontSize: "35",
     fontWeight: "500",
-    height: height / 7,
-    paddingTop: height / 13,
+    paddingBottom: 10,
   },
+
 });
 
 export default Orders;

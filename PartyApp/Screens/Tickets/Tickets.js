@@ -35,16 +35,11 @@ const Tickets = (props) => {
 
   useFocusEffect(
     useCallback(() => {
-      // Get Token
-      AsyncStorage.getItem("jwt")
-        .then((res) => {
-          setToken(res);
-        })
-        .catch((error) => console.log(error));
 
       //get user profile
       AsyncStorage.getItem("jwt")
         .then((res) => {
+          setToken(res);
           axios
             .get(`${baseURL}users/${context.stateUser.user.userId}`, {
               headers: { Authorization: `Bearer ${res}` },
@@ -60,15 +55,6 @@ const Tickets = (props) => {
                     x.data
                   )
                 );
-              // axios
-              //   .get(`${baseURL}orders`, {
-              //     headers: { Authorization: `Bearer ${res}` },
-              //   })
-              //   .then((x) =>
-              //     setTicketList(
-              //       x.data.filter((order) => order.user._id == user.data._id)
-              //     )
-              //   );
             });
         })
         .catch((error) => console.log(error));

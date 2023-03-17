@@ -10,13 +10,21 @@ import {
   TouchableOpacity
 } from "react-native";
 
+import Moment from 'moment';
+
 // ERROR
 // {partiesFiltered.length > 0 ? (
 
 var { width } = Dimensions.get("window");
 
+
+
 const SearchedParty = (props) => {
   const { partiesFiltered } = props;
+
+
+
+  Moment.locale('de');
   return (
     <ScrollView style={styles.listContainer}>
       {partiesFiltered.length > 0 ? (
@@ -32,10 +40,11 @@ const SearchedParty = (props) => {
               source={{ uri: item.image }}
             />
             <View style={styles.thumbnailTextBox}>
-              <Text style={styles.hostName}>{item.host.name}</Text>
+              <Text style={styles.hostName}>{item.host.name}'s Party</Text>
 
-              <Text style={styles.dateText}>{item.dateOf}</Text>
-              <Text style={styles.dateText}>{item.price}$</Text>
+              <Text style={styles.dateText}>{Moment(item.dateOf).format('ddd, MMMM Do')}</Text>
+              <Text style={styles.dateText}>{item.memberCount}/{item.capacity} members</Text>
+              <Text style={styles.dateText}>${item.price}</Text>
             </View>
           </TouchableOpacity>
         ))

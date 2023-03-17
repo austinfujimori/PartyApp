@@ -31,11 +31,6 @@ const storage = multer.diskStorage({
 const uploadOptions = multer({ storage: storage });
 
 router.get(`/`, async (req, res) => {
-  //.select(name, etc.) to the end for specific things
-
-  // if (req.query.categories) {
-  //   filter = { category: req.query.categories.split(",") };
-  // }
 
   const partyList = await Party.find().populate("host");
 

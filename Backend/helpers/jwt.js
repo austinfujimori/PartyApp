@@ -12,7 +12,6 @@ function authJwt() {
     path: [
       { url: /\/public\/uploads(.*)/, methods: ["GET", "OPTIONS"] },
       { url: /\/api\/v1\/parties(.*)/, methods: ["GET", "OPTIONS"] },
-      { url: /\/api\/v1\/categories(.*)/, methods: ["GET", "OPTIONS"] },
       "/api/v1/users/login",
       "/api/v1/users/register",
     ],

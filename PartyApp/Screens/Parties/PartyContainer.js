@@ -47,7 +47,6 @@ const PartyContainer = (props) => {
   //testing
 
   const [clicked, setClicked] = useState(false);
-  const [fakeData, setFakeData] = useState();
 
   useEffect(() => {
     AsyncStorage.getItem("jwt")
@@ -86,14 +85,14 @@ const PartyContainer = (props) => {
         });
 
       //CONNECTION FOR CATEGORIES
-      axios
-        .get(`${baseURL}categories`)
-        .then((res) => {
-          setCategories(res.data);
-        })
-        .catch((error) => {
-          console.log("Api call error");
-        });
+      // axios
+      //   .get(`${baseURL}categories`)
+      //   .then((res) => {
+      //     setCategories(res.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log("Api call error");
+      //   });
 
       return () => {
         setParties([]);
@@ -125,22 +124,22 @@ const PartyContainer = (props) => {
     setClicked(false);
   };
 
-  //Categories
+  // //Categories
 
-  const changeCategory = (ctg) => {
-    {
-      ctg === "all"
-        ? [setPartiesCategory(initialState), setActive(true)]
-        : [
-            setPartiesCategory(
-              setPartiesCategory(
-                parties.filter((i) => i.category._id === ctg),
-                setActive(true)
-              )
-            ),
-          ];
-    }
-  };
+  // const changeCategory = (ctg) => {
+  //   {
+  //     ctg === "all"
+  //       ? [setPartiesCategory(initialState), setActive(true)]
+  //       : [
+  //           setPartiesCategory(
+  //             setPartiesCategory(
+  //               parties.filter((i) => i.category._id === ctg),
+  //               setActive(true)
+  //             )
+  //           ),
+  //         ];
+  //   }
+  // };
 
 
   return (
@@ -148,7 +147,7 @@ const PartyContainer = (props) => {
     {loading == false ? (
           <View style={{ flex: 1 }}>
           <View style={styles.searchContainer}>
-            <TouchableOpacity style={styles.mapPinButton}>
+            <TouchableOpacity style={styles.mapPinButton} onPress={() => props.navigation.navigate("Party Map View")}>
               <Feather name="map-pin" size={40} color="white" />
             </TouchableOpacity>
             <SearchBar

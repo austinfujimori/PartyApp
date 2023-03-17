@@ -56,54 +56,6 @@ router.post("/", async (req, res) => {
   res.send(_order);
 });
 
-// OLD POST REQUEST
-
-// router.post("/", async (req, res) => {
-//   const orderItemsIds = Promise.all(
-//     req.body.orderItems.map(async (orderItem) => {
-//       let newOrderItem = new OrderItem({
-//         quantity: orderItem.quantity,
-//         party: orderItem.party,
-//       });
-
-//       newOrderItem = await newOrderItem.save();
-
-//       return newOrderItem._id;
-//     })
-//   );
-
-//   const orderItemsIdsResolved = await orderItemsIds;
-
-//   const totalPrices = await Promise.all(
-//     orderItemsIdsResolved.map(async (orderItemId) => {
-//       const orderItem = await OrderItem.findById(orderItemId).populate(
-//         "party",
-//         "price"
-//       );
-
-//       const totalPrice = orderItem.party.price;
-
-//       return totalPrice;
-//     })
-//   );
-
-//   const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
-
-//   let order = new Order({
-//     orderItems: orderItemsIdsResolved,
-//     status: req.body.status,
-//     totalPrice: totalPrice,
-//     user: req.body.user,
-//     dateOrdered: req.body.dateOrdered,
-//   });
-
-//   order = await order.save();
-
-//   if (!order) return res.status(404).send("the order cannot be created");
-
-//   res.send(order);
-// });
-
 router.put("/:id", async (req, res) => {
   const order = await Order.findByIdAndUpdate(
     req.params.id,
@@ -172,6 +124,8 @@ router.get(`/get/count`, async (req, res) => {
 // get the orders given a user ID
 router.get(`/userorders/:userid`, async (req, res) => {
   const userOrderList = await Order.find({ user: req.params.userid })
+
+  
   .populate({
     path: "party",
     populate: { path: 'host' }
@@ -223,6 +177,36 @@ router.delete("/party/:partyid", async (req, res) => {
       return res.status(400).json({ success: false, error: err });
     });
     
+});
+
+
+//change status to USER CONFIRMED
+router.put("/userConfirm/:id", async (req, res) => {
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: "user confirmed",
+    },
+    { new: true }
+  );
+  console.log(order)
+
+  if (!order) return res.status(404).send("user cannot confirm");
+
+  res.send(order);
+});
+
+
+//change status to CONFIRMED
+router.put("/confirm/:id", async (req, res) => {
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: "confirmed",
+    },
+    { new: true }
+  );
+  order.save()
 });
 
 

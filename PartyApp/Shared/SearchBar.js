@@ -22,7 +22,7 @@ const SearchBar = ({ clicked, searchParty, setClicked, openList, onBlur }) => {
         {/* Input field */}
         <TextInput
           style={styles.input}
-          placeholder="Search"
+          placeholder="Search host name"
           placeholderTextColor="white"
           onChangeText={(text) => searchParty(text)}
           onFocus={
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: "white",
-    fontSize: 20,
+    fontSize: 17,
     marginLeft: 10,
     width: "90%",
   },

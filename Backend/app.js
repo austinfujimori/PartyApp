@@ -18,7 +18,6 @@ const api = process.env.API_URL;
 
 //import routers
 const partiesRouter = require("./routers/parties");
-const categoriesRouter = require("./routers/categories");
 const usersRouter = require("./routers/users");
 const ordersRouter = require("./routers/orders");
 const authJwt = require("./helpers/jwt");
@@ -33,7 +32,6 @@ app.use("/public/uploads", express.static(__dirname + "/public/uploads"))
 
 //Routers
 app.use(`${api}/parties`, partiesRouter);
-app.use(`${api}/categories`, categoriesRouter);
 app.use(`${api}/users`, usersRouter);
 app.use(`${api}/orders`, ordersRouter);
 

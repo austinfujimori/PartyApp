@@ -22,72 +22,95 @@ import baseURL from "../../../assets/common/baseUrl";
 import AuthGlobal from "../../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import Moment from 'moment';
+import Moment from "moment";
 
 var { width, height } = Dimensions.get("window");
 
 const Confirm = (props) => {
   const [token, setToken] = useState();
 
-  const order = props.route.params.order
+  const order = props.route.params.order;
 
   const context = useContext(AuthGlobal);
 
-  useFocusEffect(
-    useCallback(() => {
-      // Get Token
-      AsyncStorage.getItem("jwt")
-        .then((res) => {
-          setToken(res);
-        })
-        .catch((error) => console.log(error));
+  useEffect(() => {
+    AsyncStorage.getItem("jwt")
+      .then((res) => {
+        setToken(res);
+      })
+      .catch((error) => console.log(error));
+  });
 
-      return () => {};
-    }, [])
-  );
-
-  const confirmOrder = () => {
-
+  const confirmOrder = (id) => {
     const config = {
       headers: {
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     };
-    alert("put request and change status to \"user confirmed\"")
+
+    //change order status to USER CONFIRMED
+    axios
+      .put(`${baseURL}orders/userConfirm/${id}`, "status", config)
+      .then((res) => {
+        if (res.status == 200 || res.status == 201) {
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "User Confirmed",
+            text2: "Please wait for host to confirm",
+          });
+          setTimeout(() => {
+            props.navigation.navigate("Tickets");
+          }, 500);
+        }
+      })
+      .catch((error) => {
+        Toast.show({
+          topOffset: 60,
+          type: "error",
+          text1: "Something went wrong",
+          text2: "Please try again",
+        });
+      });
   };
 
-  Moment.locale('de');
+  Moment.locale("de");
 
   return (
     <ScrollView>
       <View style={styles.mainContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.attendeeText}>Attendee Name</Text>
-              <Text style={styles.nameText}>{order.user.name}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.attendeeText}>Attendee Name</Text>
+          <Text style={styles.nameText}>{order.user.name}</Text>
 
-              <Text style={styles.attendeeText}>Date</Text>
-              <Text style={styles.nameText}>
-              
-              {Moment(order.party.dateOf).format('ddd, MMMM Do')}
-              </Text>
-              <Text style={styles.attendeeText}>Host</Text>
-              <Text style={styles.nameText}>{order.party.host.name}</Text>
-              <Text style={styles.attendeeText}>Address</Text>
-              <Text style={styles.nameText}>{order.party.address}</Text>
-              <Text style={styles.attendeeText}>Price</Text>
-              <Text style={styles.nameText}>${order.party.price}</Text>
+          <Text style={styles.attendeeText}>Date</Text>
+          <Text style={styles.nameText}>
+            {Moment(order.party.dateOf).format("ddd, MMMM Do")}
+          </Text>
+          <Text style={styles.attendeeText}>Host</Text>
+          <Text style={styles.nameText}>{order.party.host.name}</Text>
+          <Text style={styles.attendeeText}>Address</Text>
+          <Text style={styles.nameText}>{order.party.address}</Text>
+          <Text style={styles.attendeeText}>Price</Text>
+          <Text style={styles.nameText}>${order.party.price}</Text>
 
-              <Text style={styles.attendeeText}>Date Ordered:</Text>
+          <Text style={styles.attendeeText}>Date Ordered:</Text>
 
-              <Text style={styles.nameText}>{Moment(order.dateOrdered).format('ddd, MMMM Do')}</Text>
+          <Text style={styles.nameText}>
+            {Moment(order.dateOrdered).format("ddd, MMMM Do")}
+          </Text>
 
-              {/* <Text style={styles.attendeeText}>Card:</Text>
+          {/* <Text style={styles.attendeeText}>Card:</Text>
 
               <Text style={styles.nameText}>{order.card.name}</Text> */}
-            </View>
+        </View>
 
-        <TouchableOpacity onPress={confirmOrder}>
-          <Text>Confirm</Text>
+        <TouchableOpacity onPress={() => confirmOrder(order._id)}>
+
+          <Text>
+            Confirm
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

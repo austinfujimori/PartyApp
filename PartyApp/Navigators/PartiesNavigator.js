@@ -7,6 +7,7 @@ import SingleParty from "../Screens/Parties/SingleParty";
 import CheckoutNavigator from "./CheckoutNavigator";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
+import PartyMapView from "../Screens/Parties/PartyMapView";
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,16 @@ function MyStack() {
 <Stack.Screen
         name="Ticket Checkout"
         component={TicketCheckout}
+      />
+            <Stack.Screen
+        name="Party Map View"
+        component={PartyMapView}
+        options={{
+          headerShown: false,
+          cardStyle: {
+            backgroundColor: "#fff",
+          },
+        }}
       />
 
       <Stack.Screen

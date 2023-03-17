@@ -33,6 +33,10 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 import Moment from "moment"
 
+//address PICKER
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
+
 var { width, height } = Dimensions.get("window");
 
 const CreatePartyForm = (props) => {
@@ -48,12 +52,14 @@ const CreatePartyForm = (props) => {
   const [item, setItem] = useState(null);
 
   const [description, setDescription] = useState();
-  const [address, setAddress] = useState();
   const [capacity, setCapacity] = useState();
 
   const [price, setPrice] = useState();
   const [image, setImage] = useState();
   const [mainImage, setMainImage] = useState();
+
+  //ADDRESS PICKER
+  const [address, setAddress] = useState();
 
   //DATE
   const [dateOf, setDateOf] = useState(new Date());
@@ -221,6 +227,29 @@ const CreatePartyForm = (props) => {
 
   return (
     <View style={styles.container}>
+      {/* <View style={{marginTop: 100}}>
+
+
+      <GooglePlacesAutocomplete
+      placeholder='Search'
+      onPress={(data, details = null) => {
+        // 'details' is provided when fetchDetails = true
+        console.log(data, details);
+      }}
+      query={{
+        key: 'YOUR API KEY',
+        language: 'en',
+      }}
+      requestUrl={{
+        useOnPlatform: 'web', // or "all"
+        url:
+          'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api', // or any proxy server that hits https://maps.googleapis.com/maps/api
+        headers: {
+          Authorization: `an auth token`, // if required for your proxy
+        },
+      }}
+    />
+          </View> */}
       <ScrollView style={styles.scrollContainer}>
         <View>
           <ImageBackground
@@ -299,6 +328,7 @@ const CreatePartyForm = (props) => {
           placeholderTextColor={"gray"}
           borderColor={"white"}
         />
+
 
         {locked ? (
 
