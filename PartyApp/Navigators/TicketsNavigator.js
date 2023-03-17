@@ -3,9 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack"
 
 import Tickets from "../Screens/Tickets/Tickets"
 
-import Confirm from "../Screens/Tickets/Checkout/Confirm"
-
-import CheckoutNavigator from "./CheckoutNavigator"
 
 const Stack = createStackNavigator()
 
@@ -33,16 +30,7 @@ function MyStack() {
                     }
                }}
                />
-               <Stack.Screen 
-               name = "Confirm"
-               component={Confirm}
-               options={{
-                    title: "Check In",
-                    cardStyle:{
-                         backgroundColor:"#fff"
-                    }
-               }}
-               />
+
 
 {/* <Stack.Screen 
                name = "Confirm"

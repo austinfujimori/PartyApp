@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import Login from "../Screens/User/Login";
 import SignUp from "../Screens/User/SignUp";
-import Main from "./Main";
+import MainNavigator from "./MainNavigator"
 
 const Stack = createStackNavigator();
 
@@ -28,8 +28,8 @@ function MyStack() {
       />
 
       <Stack.Screen
-        name="Main"
-        component={Main}
+        name="Main Navigator"
+        component={MainNavigator}
         options={{
           headerShown: false,
           gestureEnabled: false,

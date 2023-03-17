@@ -24,7 +24,7 @@ const Login = (props) => {
 
   useEffect(() => {
     if (context.stateUser.isAuthenticated === true) {
-      props.navigation.navigate("Main")
+      props.navigation.navigate("Main Navigator")
     }
   }, [context.stateUser.isAuthenticated])
 

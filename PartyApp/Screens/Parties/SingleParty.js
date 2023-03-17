@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Image,
+  ImageBackground,
   SafeAreaView,
   View,
   StyleSheet,
@@ -10,48 +10,28 @@ import {
   TouchableOpacity
 } from "react-native";
 
+
+import Moment from 'moment';
+
 import TrafficLight from "../../Shared/StyledComponents/TrafficLight";
 
 const SingleParty = (props) => {
   const [item, setItem] = useState(props.route.params.item);
-  const [availability, setAvailability] = useState(null);
 
+  Moment.locale('de');
 
-  const [availabilityText, setAvailabilityText] = useState("")
-
-  useEffect(() => {
-    if (props.route.params.item.memberCount == props.route.params.item.capacity){
-      setAvailability(<TrafficLight unavailable> </TrafficLight>)
-      setAvailabilityText("Full")
-    }
-
-    else if (props.route.params.item.memberCount >= props.route.params.item.capacity - 5){
-      setAvailability(<TrafficLight limited> </TrafficLight>)
-      setAvailabilityText("Almost Full")
-    }
-
-    else {
-      setAvailability(<TrafficLight available> </TrafficLight>)
-      setAvailabilityText("Open")
-    }
-
-    return () => {
-      setAvailability(null)
-      setAvailabilityText("")
-    }
-  }, [])
 
   return (
     <View style={styles.container}>
       <ScrollView style={{ marginBottom: 80 }}>
-        <Image
+        <ImageBackground
           source={{
             uri: item.image,
           }}
           
           resizeMode="cover"
           style={styles.image}
-        />
+        ></ImageBackground>
         <View style={styles.contentContainer}>
           <View
             style={{
@@ -60,7 +40,9 @@ const SingleParty = (props) => {
               alignItems: "center",
             }}
           >
-            <Text style={styles.dateText}>{item.dateOf}</Text>
+            <Text style={styles.dateText}>
+            
+            {Moment(item.dateOf).format('ddd, MMMM Do')}</Text>
             <Text style={styles.countText}>
               {item.memberCount}/{item.capacity}
             </Text>
@@ -80,12 +62,6 @@ const SingleParty = (props) => {
 <Text style={styles.payText}>Party Full</Text>
           </TouchableOpacity>
           )}
-
-            <View>
-              <Text>
-                {availabilityText}
-              </Text>
-            </View>
 
 
         </View>

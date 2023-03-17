@@ -36,25 +36,6 @@ function MyStack() {
           },
         }}
       />
-            <Stack.Screen
-        name="Create Party Form"
-        component={CreatePartyForm}
-        options={{
-          headerShown: false,
-          cardStyle: {
-            backgroundColor: "white",
-          },
-          ...TransitionPresets.ModalSlideFromBottomIOS
-        }}
-      />
-                  <Stack.Screen
-        name="Party View"
-        component={PartyView}
-        options={{
-          backgroundColor: "Black",
-          title: "Guests",
-        }}
-      />
     </Stack.Navigator>
   );
 }

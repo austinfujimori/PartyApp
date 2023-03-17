@@ -3,8 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import PartyContainer from "../Screens/Parties/PartyContainer";
 
-import SingleParty from "../Screens/Parties/SingleParty";
-import CheckoutNavigator from "./CheckoutNavigator";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
 import PartyMapView from "../Screens/Parties/PartyMapView";
@@ -38,16 +36,6 @@ function MyStack() {
           },
         }}
       />
-      <Stack.Screen
-        name="Checkout"
-        component={CheckoutNavigator}
-        options={({ route }) => ({ title: route.params.title })}
-      />
-
-<Stack.Screen
-        name="Ticket Checkout"
-        component={TicketCheckout}
-      />
             <Stack.Screen
         name="Party Map View"
         component={PartyMapView}
@@ -59,16 +47,7 @@ function MyStack() {
         }}
       />
 
-      <Stack.Screen
-        name="Party Detail"
-        component={SingleParty}
-        options={{
-          headerShown: false,
-          cardStyle: {
-            backgroundColor: "white",
-          },
-        }}
-      />
+
     </Stack.Navigator>
   );
 }
