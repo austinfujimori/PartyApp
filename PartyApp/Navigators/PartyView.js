@@ -6,27 +6,29 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import Orders from "../Screens/CreateParty/Oders"
 import ConfirmedOrders from "../Screens/CreateParty/ConfirmedOrders"
 
+
 const Tab = createMaterialTopTabNavigator()
 
-function MyTabs() {
+function MyTabs(props) {
      return (
           <Tab.Navigator
           screenOptions={{
-          tabBarActiveTintColor:"#ff7605",
+          tabBarActiveTintColor:"#ff7575",
           tabBarInactiveTintColor:"gray",
           tabBarStyle:{
-               backgroundColor: "rgba(0,0,0,0.9)"
+               backgroundColor: "white"
           },
           tabBarIndicatorStyle:{
-               backgroundColor: "#ff7605",
                borderWidth: 2,
-               borderColor: "#ff7605"
+               borderColor: "#ff7575"
           },
           tabBarLabelStyle: { fontSize: 15, fontWeight: "700", fontFamily:"Avenir" },
           }}
           >
-               <Tab.Screen name = "Orders" options={{title: "Pending"}} component={Orders} />
-               <Tab.Screen name = "Confirmed Orders" options={{title: "Confirmed"}} component={ConfirmedOrders} />
+               <Tab.Screen name = "Orders" options={{title: "Pending"}} component={Orders} 
+               />
+               <Tab.Screen name = "Confirmed Orders" options={{title: "Confirmed"}} component={ConfirmedOrders} 
+               />
           </Tab.Navigator>
      )
 }

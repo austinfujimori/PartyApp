@@ -13,7 +13,7 @@ var { width, height } = Dimensions.get("window");
 
 // Context
 import AuthGlobal from "../../Context/store/AuthGlobal"
-import { loginUser } from "../../Context/actions/Auth.actions"
+import { loginUser, checkLoginStatus } from "../../Context/actions/Auth.actions"
 
 
 const Login = (props) => {
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   loginButton:{
     alignSelf: "center",
     borderWidth: 3,
-    borderRadius: 33,
+    borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderColor: "white",

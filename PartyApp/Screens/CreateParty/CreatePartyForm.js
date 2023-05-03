@@ -10,12 +10,13 @@ import {
   ImageBackground,
   Platform,
   RefreshControl,
+  TextInput,
   ProgressViewIOSComponent,
 } from "react-native";
 
 import Input from "../../Shared/Form/Input";
 
-import Icon from "react-native-vector-icons/AntDesign";
+import Icon from "react-native-vector-icons/Entypo";
 
 import Toast from "react-native-toast-message";
 
@@ -32,9 +33,6 @@ import mime from "mime";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import Moment from "moment"
-
-//address PICKER
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 
 var { width, height } = Dimensions.get("window");
@@ -227,53 +225,28 @@ const CreatePartyForm = (props) => {
 
   return (
     <View style={styles.container}>
-      {/* <View style={{marginTop: 100}}>
+      <ScrollView style={styles.scrollContainer}
+      stickyHeaderIndices={[0]}
+      >
 
+      <View style={{marginBottom: -110}}>
+          <View style={{height: 50}}></View>
+          <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.navigate("Create Party Container")}>
+            <Icon name="chevron-left" color="white" size={40}/>
+          </TouchableOpacity>
+          </View>
 
-      <GooglePlacesAutocomplete
-      placeholder='Search'
-      onPress={(data, details = null) => {
-        // 'details' is provided when fetchDetails = true
-        console.log(data, details);
-      }}
-      query={{
-        key: 'YOUR API KEY',
-        language: 'en',
-      }}
-      requestUrl={{
-        useOnPlatform: 'web', // or "all"
-        url:
-          'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api', // or any proxy server that hits https://maps.googleapis.com/maps/api
-        headers: {
-          Authorization: `an auth token`, // if required for your proxy
-        },
-      }}
-    />
-          </View> */}
-      <ScrollView style={styles.scrollContainer}>
         <View>
           <ImageBackground
             source={{
               uri: image
                 ? image
-                : "https://cdn-icons-png.flaticon.com/512/2956/2956596.png",
+                : "https://pbs.twimg.com/media/EiZTInlWsAEi3a9.jpg",
             }}
             style={styles.image}
             imageStyle={image ? styles.image : styles.iconImage}
           >
-            <TouchableOpacity
-              style={styles.backButtonContainer}
-              onPress={() =>
-                props.navigation.navigate("Create Party Container")
-              }
-            >
-              <Icon
-                style={styles.backButton}
-                name="leftcircle"
-                color="rgb(240,240,240)"
-                size={40}
-              />
-            </TouchableOpacity>
+            
 
             <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
               <Text style={styles.imagePickerText}>Select Image</Text>
@@ -281,58 +254,95 @@ const CreatePartyForm = (props) => {
           </ImageBackground>
         </View>
 
-        <Input
-          placeholder={"Address"}
-          name={"Address"}
-          id={"address"}
-          value={address}
-          onChangeText={(text) => setAddress(text)}
-          backgroundColor={"rgb(240,240,240)"}
-          inputColor={"black"}
-          placeholderTextColor={"gray"}
-          borderColor={"white"}
-        />
-
-        <Input
-          placeholder={"Description"}
-          name={"Description"}
-          id={"description"}
-          value={description}
-          onChangeText={(text) => setDescription(text)}
-          backgroundColor={"rgb(240,240,240)"}
-          inputColor={"black"}
-          placeholderTextColor={"gray"}
-          borderColor={"white"}
-        />
-        <Input
-          placeholder={"Price"}
-          name={"Price"}
-          id={"price"}
-          value={price}
-          keyboardType={"numeric"}
-          onChangeText={(text) => setPrice(text)}
-          backgroundColor={"rgb(240,240,240)"}
-          inputColor={"black"}
-          placeholderTextColor={"gray"}
-          borderColor={"white"}
-        />
-        <Input
-          placeholder={"Capacity"}
-          name={"Capacity"}
-          id={"capacity"}
-          value={capacity}
-          keyboardType={"numeric"}
-          onChangeText={(text) => setCapacity(text)}
-          backgroundColor={"rgb(240,240,240)"}
-          inputColor={"black"}
-          placeholderTextColor={"gray"}
-          borderColor={"white"}
-        />
+        <Text style={[styles.fieldLabel, {marginTop: 20}]}>
+          Address
+        </Text>
+        {/* ADDRESS */}
+        <TextInput
+        style={styles.fieldContainer}
+        placeholder={"Enter the address..."}
+        placeholderTextColor={"gray"}
+        name={"Address"}
+        id={"address"}
+        value={address}
+        autoCorrect={false}
+        onChangeText={(text) => setAddress(text)}
+      ></TextInput>
 
 
+
+        <Text style={styles.fieldLabel}>
+          Description
+        </Text>
+
+        {/* DESCRIPTION */}
+        <TextInput
+        style={[styles.fieldContainer, {paddingTop: 20, height: height/5}]}
+        placeholder={"Enter the party description..."}
+        placeholderTextColor={"gray"}
+        name={"Description"}
+        id={"description"}
+        value={description}
+        multiline={true}
+        onChangeText={(text) => setDescription(text)}
+      ></TextInput> 
+
+
+
+
+
+
+
+
+
+
+        <Text style={styles.fieldLabel}>
+          Price
+        </Text>
+
+        {/* PRICE */}
+<TextInput
+   style={styles.fieldContainer}
+        placeholder={"Enter the price..."}
+        placeholderTextColor={"gray"}
+        name={"Price"}
+        id={"price"}
+        value={price}
+        autoCorrect={false}
+        onChangeText={(text) => setPrice(text)}
+        keyboardType="numeric"
+      ></TextInput>
+
+        <Text style={styles.fieldLabel}>
+          Capacity
+        </Text>
+
+          {/* Capacity */}
+          <TextInput
+   style={styles.fieldContainer}
+        placeholder={"Enter the capacity..."}
+        placeholderTextColor={"gray"}
+        name={"Capacity"}
+        id={"capacity"}
+        value={capacity}
+        autoCorrect={false}
+        onChangeText={(text) => setCapacity(text)}
+        keyboardType="numeric"
+      ></TextInput>
+
+
+
+
+
+<Text style={styles.fieldLabel}>
+          Date
+        </Text>
+
+
+        <View style={styles.dateContainer}>
         {locked ? (
 
-          <Text>
+          <Text style={{marginTop: 15, alignSelf: "center", marginBottom: 20, color: "gray"}}>
             You cannot change the date of your party.
           </Text>
         ):(
@@ -342,66 +352,95 @@ const CreatePartyForm = (props) => {
           mode={mode}
           is24Hour={true}
           onChange={onChangeDate}
+          style={styles.datePicker}
+          display="spinner"
         />
         )
 
         }
-        
+                </View>
 
+         <View style={styles.confirmContainer}>
         <TouchableOpacity
-          style={styles.buttonContainer}
+          style={styles.confirmButton}
           onPress={() => addParty()}
         >
-          <Text style={styles.createText}>Confirm</Text>
+          <Text style={styles.payText}>Confirm</Text>
         </TouchableOpacity>
 
+        </View>
+
         {err ? <Error message={err} /> : null}
+
+
+
       </ScrollView>
+
+      <View>
+        
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  backButtonContainer: {
-    marginTop: 30,
-    marginLeft: 10,
+  confirmContainer: {
+    marginTop: 20,
+    marginBottom: 60,
+    alignSelf: "center",
+    alignItems: "center"
+  },
+  datePicker: {
+    marginLeft: 5,
+  },
+  dateContainer: {
+    borderColor: "rgb(200,200,200)",
+  },
+  fieldContainer: {
+    fontFamily: "Avenir",
+    fontSize: 17,
+    marginTop: 10,
+    backgroundColor: "rgb(230, 230, 230)",
+    marginHorizontal: 20,
+    borderRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    justifyContent: "center"
+  },
+  fieldLabel: {
+    marginLeft: 25,
+    fontWeight: "500",
+    fontSize: 20,
   },
   container: {
     // backgroundColor: "rgb(159,162,170)",
     backgroundColor: "white",
   },
   scrollContainer: {},
-  backButton: {
-    marginLeft: 3,
-    marginTop: 15,
-  },
   iconImage: {
     width: width,
     height: width,
   },
-
-  buttonContainer: {
-    alignSelf: "center",
-    borderWidth: 2,
-    borderRadius: 33,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderColor: "orange",
-    marginTop: 20,
-    marginBottom: 30,
+  confirmButton: {
+    backgroundColor: "#ff7575",
+    width: 200,
+    borderRadius: 7,
+    padding: 15,
+    alignSelf: "flex-end",
   },
-  createText: {
-    color: "orange",
-    fontFamily: "Avenir",
-    fontSize: 18,
+  payText: {
+    color: "white",
+    fontSize: 25,
     fontWeight: "600",
+    alignSelf: "center",
   },
 
   image: {
     width: width,
     height: width,
     alignSelf: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
   },
   imagePicker: {
     backgroundColor: "rgba(0,0,0, 0.6)",
@@ -414,6 +453,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 17,
     fontWeight: "500",
+  },
+  backButton:{
+    paddingVertical: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    width: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems:'center',
+    marginLeft: 10
   },
 });
 

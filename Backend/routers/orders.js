@@ -196,18 +196,20 @@ router.put("/userConfirm/:id", async (req, res) => {
   res.send(order);
 });
 
-
-//change status to CONFIRMED
-router.put("/confirm/:id", async (req, res) => {
+//change status to HOST CONFIRMED
+router.put("/hostConfirm/:id", async (req, res) => {
   const order = await Order.findByIdAndUpdate(
     req.params.id,
     {
-      status: "confirmed",
+      status: "host confirmed",
     },
     { new: true }
   );
-  order.save()
-});
+  console.log(order)
 
+  if (!order) return res.status(404).send("host cannot confirm");
+
+  res.send(order);
+});
 
 module.exports = router;

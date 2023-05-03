@@ -9,6 +9,7 @@ import {
   ScrollView,
   FlatList,
   Image,
+  Alert
 } from "react-native";
 
 import { connect } from "react-redux";
@@ -67,38 +68,55 @@ const Tickets = (props) => {
   );
 
   const deleteOrder = (id, partyID, memberCount) => {
+
+    //ALERT
+    Alert.alert(
+      'Are you sure you want to remove this ticket?',
+      'You will recieve a 100% refund.',
+      [
+        {text: 'Cancel', onPress: () => null},
+        {text: 'Delete', onPress: () => {
+
     //delete order
     axios
-      .delete(`${baseURL}orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .catch((error) => console.log(error));
+    .delete(`${baseURL}orders/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .catch((error) => console.log(error));
 
 
-    // decrease party member count by 1
-    const partyConfig = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .put(
-        `${baseURL}parties/decreaseMemberCount/${partyID}`,
-        memberCount,
-        partyConfig
-      )
-      .then((res) => {
-        if (res.status == 200 || res.status == 201) {
-          Toast.show({
-            topOffset: 60,
-            type: "success",
-            text1: "Party Updatd",
-          });
-        }
-      });
+  // decrease party member count by 1
+  const partyConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  axios
+    .put(
+      `${baseURL}parties/decreaseMemberCount/${partyID}`,
+      memberCount,
+      partyConfig
+    )
+    .then((res) => {
+      if (res.status == 200 || res.status == 201) {
+        Toast.show({
+          topOffset: 60,
+          type: "success",
+          text1: "Party Updatd",
+        });
+      }
+    });
 
-      props.navigation.navigate("PartiesMain");
+    props.navigation.navigate("PartiesMain");
+
+          
+      
+        },
+        style: 'destructive'},
+      ],
+      {cancelable: true},
+    );
   };
 
 
@@ -114,60 +132,75 @@ const Tickets = (props) => {
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>Tickets</Text>
               </View>
+              <View style={{alignItems: "center", alignSelf:"center", justifyContent: "center"}}>
               {ticketList.map((data) => {
 
                 return (
-                  <View style={styles.ticketContainer}>
+                  <TouchableOpacity 
+                  onPress={() => {
+                    props.navigation.navigate("Party Detail", {item: data.party, username: data.user._id, data: data})
+                  }}
+                  
+                  style={styles.container}>
                     <Image
                       key={Math.random()}
                       source={{ uri: data.party.image }}
-                      style={styles.listItem}
+                      style={styles.image}
+                      resizeMode="cover"
                     />
 
-                    <View style={styles.buttons}>
-                      <View style={styles.textContainer}>
-                        <View>
-                          <Text style={styles.hostName}>
-                            {data.party.host.name}'s Party
-                          </Text>
-                          <Text style={styles.dateOfText}>
-                          {Moment(data.party.dateOf).format('ddd, MMMM Do')}
-                            
-                          </Text>
-                          <Text style={styles.priceText}>
-                            ${data.party.price}
-                          </Text>
-                        </View>
-                      </View>
+                    <View style={styles.textContainer}>
+                            <View style={styles.SideBySide}>
+                              <View>
+                                <Text style={styles.date}>
+                                {Moment(data.party.dateOf).format('ddd, MMMM Do')}
+                                  {/* {dateOf.length > 15 ? dateOf.substring(0, 15 - 3) + "..." : dateOf} */}
+                                </Text>
+                                <Text style={styles.membersText}>
+                                  {data.party.memberCount} / {data.party.capacity} members
+                                </Text>
 
-                      <View>
-                        <TouchableOpacity
-                          onPress={() =>
-                            props.navigation.navigate("Confirm", {
-                              order: data,
-                            })
-                          }
-                          style={[
-                            styles.buttonContainer,
-                            { borderColor: "#0093FD", marginBottom: 10 },
-                          ]}
-                        >
-                          <Text style={styles.confirmText}>Check In</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
-                          style={[
-                            styles.buttonContainer,
-                            { borderColor: "red" },
-                          ]}
-                        >
-                          <Text style={styles.removeText}>Remove</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </View>
+                                <Text style={styles.distanceText}>{data.party.address}</Text>
+
+                                <Text style={styles.hostText}>
+                                  {data.party.host.name.length > 15
+                                    ? data.party.host.name.substring(0, 15 - 3) + "..."
+                                    : data.party.host.name}
+                                </Text>
+                              </View>
+
+
+                              <View>
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    props.navigation.navigate("Confirm", {
+                                      order: data,
+                                    })
+                                  }
+                                  style={[
+                                    styles.buttonContainer,
+                                    { borderColor: "#2dc27c", marginBottom: 10 },
+                                  ]}
+                                >
+                                  <Text style={styles.confirmText}>Check In</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
+                                  style={[
+                                    styles.buttonContainer,
+                                    { borderColor: "gray" },
+                                  ]}
+                                >
+                                  <Text style={styles.removeText}>Remove</Text>
+                                </TouchableOpacity>
+                                </View>
+                            </View>
+                          </View>
+                  </TouchableOpacity>
                 );
               })}
+              </View>
+
             </ScrollView>
           ) : (
             <ScrollView>
@@ -202,23 +235,83 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const styles = StyleSheet.create({
-  ticketContainer: {},
+  container: {
+    width: width / 1.1,
+    marginTop: 20,
+  },
+  textContainer: {
+    marginTop: width / 1.3 + 20,
+    marginLeft: 5,
+    alignSelf: "center"
+  },
+  image: {
+    marginTop: 10,
+    width: width / 1.1,
+    height: width / 1.3,
+    backgroundColor: "white",
+    position: "absolute",
+    borderRadius: 15,
+    alignSelf: "center",
+    borderWidth: 0,
+    borderColor: "#ff7605"
+  },
+  date: {
+    fontFamily: "Avenir",
+    fontSize: 25,
+  },
+  payButton: {
+    borderWidth: 2,
+    borderColor: "#ff7605",
+    width: 100,
+    borderRadius: 10,
+    padding: 7,
+    alignSelf: "flex-end",
+    marginRight: 5,
+  },
+  payText: {
+    fontFamily: "Avenir",
+    color: "#ff7605",
+    fontSize: 17,
+    fontWeight: "500",
+    alignSelf: "center",
+  },
+  hostText: {
+    fontFamily: "Avenir",
+    fontSize: 22,
+    color: "#2dc27c",
+  },
+  SideBySide: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  distanceText: {
+    fontFamily: "Avenir",
+    fontSize: 20,
+    color: "#656565",
+  },
+  membersText: {
+    fontSize: 20,
+    fontFamily: "Avenir",
+    color: "#656565",
+  },
+  image: {
+    marginTop: 10,
+    width: width / 1.1,
+    height: width / 1.3,
+    backgroundColor: "white",
+    position: "absolute",
+    borderRadius: 15,
+    alignSelf: "center",
+    borderWidth: 0,
+    borderColor: "#ff7605"
+  },
   noPartyText: {
     alignSelf: "center",
     marginTop: height / 9,
   },
-  listItem: {
-    alignSelf: "center",
-    borderRadius: 15,
-    width: width / 1.1,
-    height: width / 1.3,
-    marginTop: 15,
-    backgroundColor: "white",
-    borderColor: "#C5C5C5",
-    justifyContent: "center",
-  },
   titleContainer: {
-    borderBottomColor: "orange",
+    borderBottomColor: "#2dc27c",
     borderBottomWidth: 5,
     width: width / 2,
     marginLeft: width - width / 1.1,
@@ -232,27 +325,11 @@ const styles = StyleSheet.create({
     height: height / 7,
     paddingTop: height / 13,
   },
-  listContainer: {},
-  hostName: {
-    fontFamily: "Avenir",
-    fontSize: 30,
-    marginBottom: 8,
+  listContainer: {
   },
   textContainer: {
-    marginHorizontal: 20,
-    marginTop: 15,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  dateOfText: {
-    fontFamily: "Avenir",
-    fontSize: 20,
-  },
-  priceText: {
-    fontFamily: "Avenir",
-    fontSize: 20,
-    marginTop: 10,
+    marginTop: width / 1.3 + 20,
+    marginLeft: 5,
   },
   buttons: {
     marginRight: (width - width / 1.1) / 2 + 5,
@@ -271,13 +348,13 @@ const styles = StyleSheet.create({
   removeText: {
     fontFamily: "Avenir",
     fontSize: 17,
-    color: "red",
+    color: "gray",
     fontWeight: "500",
   },
   confirmText: {
     fontFamily: "Avenir",
     fontSize: 17,
-    color: "#0093FD",
+    color: "#2dc27c",
     fontWeight: "500",
   },
 });

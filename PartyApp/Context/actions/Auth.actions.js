@@ -1,14 +1,18 @@
-// @react-native-async-storage/async-storage
-// instead of
-// @react-native-community/async-storage
-
 import jwt_decode from "jwt-decode"
-
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import Toast from "react-native-toast-message"
 import baseURL from "../../assets/common/baseUrl"
 
 export const SET_CURRENT_USER = "SET_CURRENT_USER"
+
+export const checkLoginStatus = async () => {
+     //CHECK if JWT is present
+     const token = await AsyncStorage.getItem("jwt")
+     if (token) {
+          //AUthenticate with jWT
+          alert(token)
+     }
+}
 
 export const loginUser = (user, dispatch) => {
      fetch(`${baseURL}users/login`, {
@@ -23,9 +27,14 @@ export const loginUser = (user, dispatch) => {
      .then((data) => {
           if (data) {
                const token = data.token;
+               //STORE TOKEn
                AsyncStorage.setItem("jwt", token)
                const decoded = jwt_decode(token)
+
+
+
                dispatch(setCurrentUser(decoded, user))
+
           } else {
                logoutUser(dispatch)
           }

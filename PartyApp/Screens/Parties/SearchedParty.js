@@ -21,7 +21,7 @@ var { width } = Dimensions.get("window");
 
 const SearchedParty = (props) => {
   const { partiesFiltered } = props;
-
+  const username = props.username
 
 
   Moment.locale('de');
@@ -31,7 +31,12 @@ const SearchedParty = (props) => {
         partiesFiltered.map((item) => (
           <TouchableOpacity
             style={styles.thumbnail}
-            onPress={() => {props.navigation.navigate("Party Detail", {item: item})}}
+            onPress={() => {props.navigation.navigate("Party Detail", 
+            {username: username, 
+              item: item,
+              tabRoute: "PartiesMain"
+            }
+            )}}
             key={item._id}
           >
             <Image
@@ -40,11 +45,11 @@ const SearchedParty = (props) => {
               source={{ uri: item.image }}
             />
             <View style={styles.thumbnailTextBox}>
-              <Text style={styles.hostName}>{item.host.name}'s Party</Text>
+              <Text style={styles.hostName}>{item.host.name}</Text>
 
               <Text style={styles.dateText}>{Moment(item.dateOf).format('ddd, MMMM Do')}</Text>
               <Text style={styles.dateText}>{item.memberCount}/{item.capacity} members</Text>
-              <Text style={styles.dateText}>${item.price}</Text>
+              <Text style={styles.priceText}>${item.price}</Text>
             </View>
           </TouchableOpacity>
         ))
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     height: width / 3,
     backgroundColor: "white",
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: "white",
     borderBottomColor: "#C5C5C5",
     flexDirection: "column",
     justifyContent:"center",
@@ -75,7 +80,7 @@ const styles = StyleSheet.create({
     width: width / 3,
     height: width / 3 - 20,
     marginLeft: 10,
-    backgroundColor: "transparent",
+    backgroundColor: "white",
     position: "absolute",
     borderRadius: 5,
   },
@@ -83,13 +88,19 @@ const styles = StyleSheet.create({
      marginLeft: width / 3 + 30
   },
   hostName:{
-     fontSize: 22,
+     fontSize: 25,
      fontFamily: "Avenir"
   },
   dateText:{
-     fontSize: 14,
+     fontSize: 18,
+     color: "gray",
      fontFamily: "Avenir"
   },
+  priceText:{
+    fontSize: 18,
+    fontFamily: "Avenir",
+    color: "#ff9100"
+ },
   noParty: {
     alignSelf:"center",
     marginTop: 40

@@ -18,9 +18,8 @@ import FeaturedCard from "./FeaturedCard";
 const data = require("../assets/data/parties.json");
 
 const Banner = (props) => {
-  // const temp = [props]
-  // const data = temp[0]
-  // console.log("________________________")
+  // const partyList = props.data
+
 
   //number of featured parties is 5
   var size = 5;
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderBottomColor: "#C5C5C5",
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: "white",
   },
   swiper: {
     width: width,
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#ff7605",
     width: 100,
-    borderRadius: 22,
+    borderRadius: 10,
     padding: 7,
     alignSelf: "flex-end",
     marginRight: 25,

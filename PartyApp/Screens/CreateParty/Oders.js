@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 
-import { ScrollView, FlatList, Dimensions, View, Text, StyleSheet } from "react-native";
+import { ScrollView, FlatList, Alert, Dimensions, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import axios from "axios";
 
@@ -8,20 +8,24 @@ import { useFocusEffect } from "@react-navigation/native";
 import baseURL from "../../assets/common/baseUrl";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { VideoExportPreset } from "expo-image-picker";
+
+import Icon from "react-native-vector-icons/EvilIcons";
+import Icon2 from "react-native-vector-icons/Octicons";
 
 var { height, width } = Dimensions.get("window");
 
 const Orders = (props) => {
-  const thisParty = props.route.params.thisParty;
   const [orderList, setOrderList] = useState();
   const token = props.route.params.token;
+  const thisParty = props.route.params.thisParty;
 
   useFocusEffect(
     useCallback(() => {
       getOrders();
       return () => {
         setOrderList();
+
       };
     }, [])
   );
@@ -35,14 +39,6 @@ const Orders = (props) => {
       },
     };
 
-    // axios
-    //   .get(`${baseURL}orders`, config)
-    //   .then((x) => {
-    //     //filter orders to which are for this party
-    //     setOrderList(x.data.filter((order) => order.party._id == thisParty));
-    //   })
-    //   .catch((error) => console.log(error));
-
 
     axios
     .get(`${baseURL}orders/partyOrders/${thisParty}`, config)
@@ -52,39 +48,101 @@ const Orders = (props) => {
     .catch((error) => console.log(error));
   };
 
-  const deleteOrder = (id, partyID, memberCount) => {
-    //delete order
-    axios
-      .delete(`${baseURL}orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .catch((error) => console.log(error));
 
 
-    // decrease party member count by 1
-    const partyConfig = {
+
+
+
+// confirm
+  const confirmOrder = (id) => {
+    const config = {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     };
+
+    //change order status to USER CONFIRMED
     axios
-      .put(
-        `${baseURL}parties/decreaseMemberCount/${partyID}`,
-        memberCount,
-        partyConfig
-      )
+      .put(`${baseURL}orders/hostConfirm/${id}`, "status", config)
       .then((res) => {
         if (res.status == 200 || res.status == 201) {
           Toast.show({
             topOffset: 60,
             type: "success",
-            text1: "Party Updatd",
+            text1: "Host Confirmed",
+            text2: "Order has been authorized",
           });
+          setTimeout(() => {
+            props.navigation.navigate("Create Party Container");
+          }, 500);
         }
+      })
+      .catch((error) => {
+        Toast.show({
+          topOffset: 60,
+          type: "error",
+          text1: "Something went wrong",
+          text2: "Please try again",
+        });
       });
+  };
 
-      props.navigation.navigate("Create Party Container");
+
+
+
+
+
+  const deleteOrder = (id, partyID, memberCount) => {
+
+
+     //ALERT
+     Alert.alert(
+      'Are you sure you want to remove this user?',
+      'They will recieve a 100% refund.',
+      [
+        {text: 'Cancel', onPress: () => null},
+        {text: 'Delete', onPress: () => {
+//delete order
+axios
+.delete(`${baseURL}orders/${id}`, {
+  headers: { Authorization: `Bearer ${token}` },
+})
+.catch((error) => console.log(error));
+
+
+// decrease party member count by 1
+const partyConfig = {
+headers: {
+  "Content-Type": "multipart/form-data",
+  Authorization: `Bearer ${token}`,
+},
+};
+axios
+.put(
+  `${baseURL}parties/decreaseMemberCount/${partyID}`,
+  memberCount,
+  partyConfig
+)
+.then((res) => {
+  if (res.status == 200 || res.status == 201) {
+    Toast.show({
+      topOffset: 60,
+      type: "success",
+      text1: "Party Updatd",
+    });
+  }
+});
+
+props.navigation.navigate("Create Party Container");
+          
+      
+        },
+        style: 'destructive'},
+      ],
+      {cancelable: true},
+    );
+
   };
   
   return (
@@ -95,19 +153,44 @@ const Orders = (props) => {
           {orderList.length ? (
             <>
 
+            <View style={styles.pendingContainer}>
             <Text style={styles.title}>
               Pending
             </Text>
 
+            <View style={styles.memberContainer}>
+              <View style={styles.memberContainerContent}>
             {orderList.map((data) => {
                 if(data.status == "user confirmed")
                 return (
                     <View style={styles.orderContainer}>
-                      <Text style={styles.default}>{data.user.name}</Text>
-                      <TouchableOpacity style={styles.confirmButton}>
-                        <Text style={styles.confirmText}>
+
+                      <View style={styles.orderTextContainer}>
+
+                      <Text style={styles.name}>{data.user.name}</Text>
+
+                      <Text style={styles.readyText}>
+                        Paid ${data.party.price}
+                      </Text>
+                      </View>
+
+
+
+                      <View style={{marginRight: 15, alignSelf: "center", flexDirection: "row", justifyContent: "flex-start"}}>
+                      <TouchableOpacity style={[styles.confirmButton, { marginBottom: 5}]}
+                      
+                      onPress={() => 
+                      
+                        confirmOrder(data._id)
+                        }
+                      >
+
+                        
+                          <Icon2 
+                          size={30}
+                          color="#ff7575"
+                          name="check-circle"/>
                           
-                          Confirm</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity 
@@ -115,13 +198,12 @@ const Orders = (props) => {
                       onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
                       
                       style={styles.removeButton}>
-                        <Text 
-                        
-                      
-                        style={styles.removeText}>
-                          
-                          Remove</Text>
+                                                  <Icon 
+                          size={40}
+                          color="gray"
+                          name="trash"/>
                       </TouchableOpacity>
+                      </View>
 
 
 
@@ -129,15 +211,26 @@ const Orders = (props) => {
                     </View>
                 );
               })}
-              <Text style={styles.title}>
+              </View>
+          </View>
+          </View>
+
+          <View style={styles.pendingContainer}>
+
+            <Text style={styles.title}>
               Waiting
             </Text>
 
+            <View style={styles.memberContainer}>
+              <View style={styles.memberContainerContent}>
               {orderList.map((data) => {
                 if(data.status == "Pending")
                 return (
                     <View style={styles.orderContainer}>
-                      <Text style={styles.default}>{data.user.name}</Text>
+                      <View style={styles.orderTextContainer}>
+                      <Text style={styles.name}>{data.user.name}</Text>
+                      </View>
+                      
 
 
 
@@ -145,16 +238,23 @@ const Orders = (props) => {
                       
                       onPress={() => deleteOrder(data._id, data.party._id, data.party.memberCount)}
                       
-                      style={styles.removeButton}>
-                        <Text style={styles.removeText}>
-                          
-                          Remove</Text>
+                      style={[styles.removeButton, {marginRight: 15, alignSelf: "center", flexDirection: "row", justifyContent: "flex-start"}]}>
+                          <Icon 
+                          size={40}
+                          color="gray"
+                          name="trash"/>
                       </TouchableOpacity>
 
 
                     </View>
                 );
               })}
+
+
+
+              </View>
+              </View>
+              </View>
 
             
             </>
@@ -173,45 +273,74 @@ const Orders = (props) => {
 };
 
 const styles = StyleSheet.create({
+  orderTextContainer: {
+    marginLeft: 15,
+  },
+  readyText: {
+    fontFamily: "Avenir",
+    fontWeight: "700",
+    fontSize: 18,
+    marginTop: 10,
+    color: "#ff7575"
+  },
+  pendingContainer: {
+    marginTop: 50
+  },
+  memberContainerContent: {
+  },
+  memberContainer: {
+    backgroundColor: "rgb(240,240,240)",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
   container: {
-    backgroundColor: "black",
+    paddingHorizontal: 20,
+    backgroundColor: "white",
   },
   orderContainer: {
-    paddingBottom: 20,
+    paddingVertical: 20,
+    borderBottomWidth: 2,
+    borderColor: "rgb(200,200,200)",
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
-  default: {
+  name: {
     fontFamily: "Avenir",
-    color: "white",
-    fontSize: 20,
+    color: "black",
+    alignSelf: "center",
+    justifyContent: "center",
+    fontSize: 25,
   },
   confirmButton: {
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "orange",
-    padding: 20,
+    borderColor: "#ff7575",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
     },
     confirmText: {
       fontFamily: "Avenir",
-      color: "orange",
-      fontSize: 20,
+      color: "#ff7575",
+      fontSize: 17,
+      fontWeight: "700"
     },
     removeButton: {
+      justifyContent: "center",
       alignItems: "center",
-      borderWidth: 2,
-      width: 100,
+      width: 50,
       borderRadius: 10,
-      padding: 10,
       },
       removeText: {
         fontFamily: "Avenir",
-        color: "red",
-        fontSize: 20,
+        color: "gray",
+        fontSize: 17,
+        fontWeight: "700"
       },
   title: {
-    color: "white",
+    color: "black",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "35",
+    fontSize: 25,
     fontWeight: "500",
     paddingBottom: 10,
   },

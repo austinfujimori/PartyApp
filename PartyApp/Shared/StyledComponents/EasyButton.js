@@ -6,7 +6,7 @@ const EasyButton = styled.TouchableOpacity`
   padding: 10px;
   margin: 5px;
   justify-content: center;
-  background: transparent;
+  background: white;
 
   ${(props) =>
     props.primary &&

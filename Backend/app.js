@@ -30,6 +30,8 @@ app.use(authJwt());
 app.use(errorHandler)
 app.use("/public/uploads", express.static(__dirname + "/public/uploads"))
 
+
+
 //Routers
 app.use(`${api}/parties`, partiesRouter);
 app.use(`${api}/users`, usersRouter);

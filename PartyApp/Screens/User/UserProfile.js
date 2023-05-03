@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
+  Dimensions,
   TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -16,6 +17,9 @@ import baseURL from "../../assets/common/baseUrl";
 
 import AuthGlobal from "../../Context/store/AuthGlobal";
 import { logoutUser } from "../../Context/actions/Auth.actions";
+import Icon from "react-native-vector-icons/FontAwesome5";
+
+var { height, width } = Dimensions.get("window");
 
 const UserProfile = (props) => {
   const context = useContext(AuthGlobal);
@@ -45,18 +49,49 @@ const UserProfile = (props) => {
   }, [context.stateUser.isAuthenticated]);
 
   return (
-    <SafeAreaView>
-      <ScrollView style={{ height: "100%" }}>
+      <ScrollView>
+        <View style={styles.titleContainer}>
+
+
+
+        <Text style={styles.title}>
+          Profile
+        </Text>
+
+        </View>
+
         <View style={styles.container}>
+
+
+
+          <View style={styles.iconTextFieldContainer}>
+
+
+          <Icon
+          size={25}
+          style={styles.icon}
+          name="user"
+          />
           <Text style={styles.nameText}>
             {userProfile ? userProfile.name : ""}
           </Text>
+
+          </View>
+
+
+
+
 
           <Text style={styles.emailText}>
             {userProfile ? userProfile.email : ""}
           </Text>
 
-          <TouchableOpacity
+
+
+        </View>
+
+
+        <TouchableOpacity
             style={styles.signOutButton}
             onPress={() => {
               AsyncStorage.removeItem("jwt"), logoutUser(context.dispatch);
@@ -64,14 +99,22 @@ const UserProfile = (props) => {
           >
             <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
-        </View>
       </ScrollView>
-    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  icon: {
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  iconTextFieldContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  container: {
+    marginLeft: width - width / 1.075,
+  },
   nameText: {
     marginLeft: 10,
     fontFamily: "Avenir",
@@ -88,15 +131,28 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontFamily: "Avenir",
     fontSize: 20,
-    color: "red"
+    color: "white",
+    fontWeight: "500"
   },
   signOutButton: {
     marginTop: 100,
     paddingVertical: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: "gray",
-    borderBottomColor: "gray",
-    borderBottomWidth: 0.5,
+    backgroundColor: "#ff9999"
+  },
+  titleContainer: {
+    borderBottomColor: "#40afff",
+    borderBottomWidth: 5,
+    width: width / 2,
+    marginLeft: width - width / 1.1,
+    marginTop: 5,
+  },
+  title: {
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "44",
+    fontWeight: "500",
+    height: height / 7,
+    paddingTop: height / 13,
   },
 });
 

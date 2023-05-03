@@ -10,8 +10,8 @@ const PartyList = (props) => {
      const username = props.username
   return (
       <TouchableOpacity onPress={() => {
-        props.navigation.navigate("Party Detail", {item: item})
-      }} style={{ width: width, alignItems: "center", backgroundColor: "transparent"}}>
+        props.navigation.navigate("Party Detail", {item: item, username: username, tabRoute: "PartiesMain"})
+      }} style={{ width: width, alignItems: "center", backgroundColor: "white"}}>
           <PartyCard {...item} username={username} navigation={props.navigation} />
       </TouchableOpacity>
   );

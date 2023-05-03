@@ -8,6 +8,7 @@ import {
   ScrollView,
   Dimensions,
   Button,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FormContainer from "../../../Shared/Form/FormContainer";
@@ -24,6 +25,8 @@ import AuthGlobal from "../../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
+
+
 const { width, height } = Dimensions.get("window");
 
 const methods = [
@@ -35,13 +38,15 @@ const paymentCards = [
   { name: "Wallet", value: 1 },
   { name: "Visa", value: 2 },
   { name: "MasterCard", value: 3 },
-  { name: "Other", value: 4 },
 ];
 
 const TicketCheckout = (props) => {
+
+
   const [token, setToken] = useState();
 
   const context = useContext(AuthGlobal);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -86,6 +91,8 @@ const TicketCheckout = (props) => {
   const [card, setCard] = useState();
 
   const checkOut = () => {
+
+
     // update party member count by + 1
 
     const partyConfig = {
@@ -150,9 +157,18 @@ const TicketCheckout = (props) => {
     props.navigation.navigate("Tickets");
   };
 
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Payment Method</Text>
+
+      <TouchableOpacity style={styles.confirmButton} onPress={buy}>
+        <Text style={styles.confirmText}>Check Out</Text>
+      </TouchableOpacity>
+
+
+
+      {/* <Text style={styles.title}>Payment Method</Text>
       <RadioForm
         dataSource={methods}
         itemShowKey="name"
@@ -184,7 +200,7 @@ const TicketCheckout = (props) => {
 
       <TouchableOpacity style={styles.confirmButton} onPress={() => checkOut()}>
         <Text style={styles.confirmText}>Confirm</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

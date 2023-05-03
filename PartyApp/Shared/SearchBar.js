@@ -4,7 +4,7 @@ import { StyleSheet, TextInput, View, Keyboard, Button } from "react-native";
 import { Feather, Entypo } from "@expo/vector-icons";
 import SearchedParty from "../Screens/Parties/SearchedParty";
 
-const SearchBar = ({ clicked, searchParty, setClicked, openList, onBlur }) => {
+const SearchBar = ({ clicked, searchParty, setClicked, openList, onBlur, username }) => {
   return (
     <View style={styles.container}>
       <View

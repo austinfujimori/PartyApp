@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   Dimensions,
   Modal,
+  ScrollView,
   ImageBackground,
 } from "react-native";
 
@@ -24,40 +25,14 @@ const ListItem = (props) => {
 
   Moment.locale('de');
   return (
-    <View>
-      {/* <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TouchableHighlight
-              underlayColor="#E8E8E8"
-              onPress={() => {
-                setModalVisible(false);
-              }}
-              style={{
-                alignSelf: "flex-end",
-                position: "absolute",
-                top: 5,
-                right: 10,
-              }}
-            >
-              <Icon name="close" color={"white"} size={40} />
-            </TouchableHighlight>
 
 
-            
-          </View>
-        </View>
-      </Modal> */}
-
+      <View >
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("Party View", {screen: "Orders", params: { token: props.token, thisParty: props._id} })}
+        onPress={() => props.navigation.navigate("Party View", 
+          
+        {screen: "Orders", params: { token: props.token, thisParty: props._id}}
+      )}
         style={styles.container}
       >
         <Image
@@ -70,60 +45,129 @@ const ListItem = (props) => {
 
         <View style={styles.insideText}>
           <View>
-            <Text style={styles.dateOf}>{Moment(props.dateOf).format('ddd, MMMM Do')}</Text>
-            <Text style={styles.address}>{props.address}</Text>
+            <Text style={styles.dateText}>{Moment(props.dateOf).format('ddd, MMMM Do')}</Text>
+            <Text style={styles.addressText}>{props.address}</Text>
             <Text
-              style={styles.description}
-              numberOfLines={2}
-              ellipsizeMode="tail"
+              style={styles.descriptionText}
             >
               {props.description}
             </Text>
-            <Text style={styles.number}>
-              {props.memberCount} / {props.capacity}
-            </Text>
-            <Text style={styles.price}>${props.price}</Text>
+
+            <View style={styles.hostContainer}>
+
+              <View>
+              <Text
+                style={styles.hostNameText}
+              >
+                {props.host.name}
+              </Text>
+              <Text style={styles.ratingText}>
+            5.0 • • • • •
+          </Text>
           </View>
 
-          <View>
-            <TouchableOpacity
-              style={[styles.editButton, {borderColor: "#0093FD"}]}
-              onPress={() => [
-                props.navigation.navigate("Create Party Form", { item: props, token: props.token }),
-                setModalVisible(false),
-              ]}
-            >
-              <Text style={[styles.buttonText, {color: "#0093FD"}]}>Edit</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-            style={[styles.editButton, {borderColor: "red"}]}
-              onPress={() => [props.delete(props._id), setModalVisible(false)]}
-            >
-              <Text style={[styles.buttonText, {color: "red"}]}>Delete</Text>
-            </TouchableOpacity>
+              <View style={styles.priceContainer}>
+              <Text
+                style={styles.priceText}
+              >
+                Price: ${props.price}
+              </Text>
+              </View>
+
+            </View>
+
           </View>
+          
         </View>
+
+
+      </TouchableOpacity>
+
+      <View style={styles.buttons}>
+      <TouchableOpacity
+        style={[styles.buttonContainer]}
+        onPress={() => [
+          props.navigation.navigate("Create Party Form", { item: props, token: props.token }),
+          setModalVisible(false),
+        ]}
+      >
+        <Text style={[styles.buttonText]}>Edit</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+      style={[styles.buttonContainer, {borderColor: "gray"}]}
+        onPress={() => [props.delete(props._id), setModalVisible(false)]}
+      >
+        <Text style={[styles.buttonText, {color: "gray"}]}>Delete</Text>
       </TouchableOpacity>
     </View>
+      </View>
+
   );
 };
 
 const styles = StyleSheet.create({
-     buttonText: {
-      fontFamily: "Avenir",
-      fontSize: 17,
-      fontWeight: "500"
-     },
-     editButton: {
-          padding: 10,
-          marginRight: 5,
-          marginBottom: 10,
-          borderWidth: 2,
-          borderRadius: 8,
-          justifyContent: "center",
-          alignItems: "center"
-     },
+  hostNameText: {
+    fontFamily: "Avenir",
+     fontSize: 25,
+     justifyContent: "center",
+     alignItems: "center",
+     alignSelf: "center"
+  },
+  hostContainer: {
+    borderTopWidth: 1,
+    marginBottom: 20,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    borderColor: "rgb(200,200,200)",
+    paddingVertical: 10,
+    width:  width / 1.1 - 10,
+  },
+  buttonContainer: {
+    alignItems: "center",
+    alignSelf: "center",
+    width: width/2 - 30,
+    justifyContent: 'center',
+    height: height/20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#ff7575",
+  },
+  priceText: {
+    fontFamily: "Avenir",
+    color: "white",
+    fontSize: 20,
+    fontWeight: "700",
+    alignSelf: "center",
+  },
+  ratingText: {
+    fontFamily: "Avenir",
+    fontSize: "20",
+    color: "gray",
+  },
+  priceContainer: {
+    backgroundColor: "#ff7575",
+    width: 160,
+    borderRadius: 7,
+    padding: 15,
+    alignSelf: "flex-end",
+  },
+  buttonText: {
+    fontFamily: "Avenir",
+    fontSize: 20,
+    color: "#ff7575",
+    fontWeight: "600",
+    justifyContent: "center"
+  },
+  buttons: {
+    marginTop: 20,
+    alignContent: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: width / 2 - width / 1.1 / 2 + 5,
+    paddingBottom: 40
+  },
   container: {
     justifyContent: "center",
     marginTop: 20,
@@ -146,35 +190,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  modalView: {
-    backgroundColor: "black",
-    borderRadius: 20,
-    alignItems: "center",
-    shadowColor: "orange",
-    height: height/1.3,
-    width: width/1.2,
-    shadowOpacity: 100,
-    shadowRadius: 25,
-    
+
+
+  dateText: {
+    fontSize: 40,
+    fontWeight: "500"
   },
-  dateOf: {
+  addressText: {
+    paddingVertical: 10,
     fontFamily: "Avenir",
     fontSize: 30,
-    borderBottomWidth: 1,
   },
-  address: {
+
+  descriptionText: {
     fontFamily: "Avenir",
-    fontSize: 20,
+    fontSize: "20",
+    color: "gray",
+    paddingBottom: 30
   },
-  description: {
-    fontFamily: "Avenir",
-    fontSize: 20,
-  },
+
+
   number: {
-    fontFamily: "Avenir",
-    fontSize: 20,
-  },
-  price: {
     fontFamily: "Avenir",
     fontSize: 20,
   },

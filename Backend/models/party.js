@@ -46,7 +46,7 @@ const partySchema = mongoose.Schema({
   },
   memberCount: {
     type: Number,
-    default: 1
+    default: 0
   }
 });
 

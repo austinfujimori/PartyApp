@@ -12,6 +12,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  Animated
 } from "react-native";
 
 import { Feather, Entypo } from "@expo/vector-icons";
@@ -124,29 +125,44 @@ const PartyContainer = (props) => {
     setClicked(false);
   };
 
-  // //Categories
 
-  // const changeCategory = (ctg) => {
-  //   {
-  //     ctg === "all"
-  //       ? [setPartiesCategory(initialState), setActive(true)]
-  //       : [
-  //           setPartiesCategory(
-  //             setPartiesCategory(
-  //               parties.filter((i) => i.category._id === ctg),
-  //               setActive(true)
-  //             )
-  //           ),
-  //         ];
-  //   }
-  // };
+  //SHRINK HEADER
+  const [scrollY, setScrollY] = useState(new Animated.Value(0));
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [150, 100],
+    extrapolate: 'clamp',
+  });
+
+  const headerTop = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [0, -100],
+    extrapolate: 'clamp',
+  });
+
+  useEffect(() => {
+    Animated.timing(scrollY, {
+      toValue: 1,
+      duration: 1,
+      useNativeDriver: false,
+    }).start();
+  }, []);
+
 
 
   return (
     <>
     {loading == false ? (
           <View style={{ flex: 1 }}>
-          <View style={styles.searchContainer}>
+          <Animated.View style={[styles.searchContainer,
+          
+{          height: headerHeight, 
+          position: 'absolute', 
+          top: headerTop, 
+          left: 0, 
+          right: 0
+        }
+          ]}>
             <TouchableOpacity style={styles.mapPinButton} onPress={() => props.navigation.navigate("Party Map View")}>
               <Feather name="map-pin" size={40} color="white" />
             </TouchableOpacity>
@@ -160,34 +176,31 @@ const PartyContainer = (props) => {
             <TouchableOpacity style={styles.infoButton}>
               <Feather name="info" size={40} color="white" />
             </TouchableOpacity>
-          </View>
+
+
+          </Animated.View>
+
+          
           {focus == true ? (
             <SearchedParty
+             username={userProfile._id}
               partiesFiltered={partiesFiltered}
               navigation={props.navigation}
             />
           ) : (
-            <ScrollView>
+
+            <ScrollView
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false }
+            )}
+            scrollEventThrottle={16}
+            contentContainerStyle={{ paddingTop: 200 }}
+            >
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>Parties</Text>
               </View>
     
-              {/* <View
-                style={{
-                  paddingBottom: 5,
-                  borderBottomColor: "#C5C5C5",
-                  borderWidth: 0.5,
-                  borderColor: "transparent",
-                }}
-              >
-                <CategoryFilter
-                  categories={categories}
-                  categoryFilter={changeCategory}
-                  partiesCategory={partiesCategory}
-                  active={active}
-                  setActive={setActive}
-                />
-              </View> */}
               <View>
                 <Text style={styles.popularTitle}>Popular Today</Text>
                 <Banner props={parties}/>
@@ -245,8 +258,8 @@ const styles = StyleSheet.create({
     fontSize: "44",
     fontWeight: "500",
     color:"black",
-    height: height / 9,
-    paddingTop: height / 20,
+    // height: height / 9,
+    // paddingTop: height / 20,
   },
   popularTitle: {
     alignItems: "center",
@@ -271,6 +284,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   searchContainer: {
+
     paddingBottom: 15,
     paddingTop: 70,
     flexDirection: "row",

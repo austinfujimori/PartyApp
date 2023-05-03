@@ -9,25 +9,40 @@ import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
 import Confirm from "../Screens/Tickets/Checkout/Confirm"
 import SingleParty from "../Screens/Parties/SingleParty";
 
+import { View, Text,Dimensions, Image, TouchableOpacity } from "react-native";
+
+
+import  LOGO from "/Users/austinfujimori/Desktop/PartyApp/PartyApp/assets/logo.png"
+
+
 
 import { TransitionPresets } from '@react-navigation/stack';
 
+import Icon from "react-native-vector-icons/Ionicons";
+
+
+
+
+
+var { height, width } = Dimensions.get("window");
+
+
 const Stack = createStackNavigator();
 
-function MyStack() {
+function MyStack(props) {
   return (
     <Stack.Navigator
     screenOptions={{
       headerBackTitleVisible: false,
-      headerTintColor: "white",
-      headerColor: "#ff7605",
+      headerTintColor: "#ff7575",
       headerStyle: {
-        backgroundColor: "rgba(0,0,0,0.85)",
+        backgroundColor: "white",
       },
       headerTitleStyle: {
         fontWeight: "500",
-        fontSize: 23,
-        fontFamily: "Avenir",
+        fontSize: 30,
+          fontFamily: "Avenir",
+          color: "black",
       },
     }}
     >
@@ -72,8 +87,10 @@ function MyStack() {
         name="Party View"
         component={PartyView}
         options={{          headerShown: true,
-          backgroundColor: "Black",
+          backgroundColor: "white",
           title: "Guests",
+          headerShadowVisible: false,
+          headerBackTitleVisible: false,
         }}
       />
                      <Stack.Screen 
@@ -91,5 +108,8 @@ function MyStack() {
 }
 
 export default function MainNavigator() {
-  return <MyStack />;
+
+  return (
+  <MyStack />
+  );
 }
