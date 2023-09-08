@@ -12,7 +12,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Animated
+  Animated,
 } from "react-native";
 
 import { Feather, Entypo } from "@expo/vector-icons";
@@ -26,6 +26,9 @@ import Banner from "../../Shared/Banner";
 import AuthGlobal from "../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+//LOCATION
+import * as Location from "expo-location";
+
 //CONNECTION
 import baseURL from "../../assets/common/baseUrl";
 import axios from "axios";
@@ -33,28 +36,40 @@ import axios from "axios";
 var { width, height } = Dimensions.get("window");
 
 const PartyContainer = (props) => {
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [status, requestPermission] = Location.useBackgroundPermissions();
+
   const [parties, setParties] = useState([]);
+  const [featuredParties, setFeaturedParties] = useState([]);
   const [partiesFiltered, setPartiesFiltered] = useState([]);
   const [focus, setFocus] = useState();
-  const [categories, setCategories] = useState([]);
-  const [partiesCategory, setPartiesCategory] = useState([]);
   const [active, setActive] = useState();
-  const [initialState, setInitialState] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   const context = useContext(AuthGlobal);
   const [userProfile, setUserProfile] = useState();
-  
+
   //testing
-
   const [clicked, setClicked] = useState(false);
-
   useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync({
+        accuracy: Location.Accuracy.Lowest,
+      });
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+
     AsyncStorage.getItem("jwt")
       .then((res) => {
         axios
           .get(`${baseURL}users/${context.stateUser.user.userId}`, {
-
             headers: { Authorization: `Bearer ${res}` },
           })
           .then((user) => setUserProfile(user.data));
@@ -70,38 +85,44 @@ const PartyContainer = (props) => {
     useCallback(() => {
       setFocus(false);
       setActive(-1);
+      // Fetch location and then fetch parties based on location
+      const fetchLocationAndParties = async () => {
+        try {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== "granted") {
+            setErrorMsg("Permission to access location was denied");
+            return;
+          }
 
-      //CONNECTION
-      axios
-        .get(`${baseURL}parties`)
-        .then((res) => {
-          setParties(res.data);
-          setPartiesFiltered(res.data);
-          setInitialState(res.data);
-          setLoading(false)
-          //setPartiesCtg(res.data)
-        })
-        .catch((error) => {
-          console.log("Api call error");
-        });
+          let location = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Lowest,
+          });
+          setLocation(location);
 
-      //CONNECTION FOR CATEGORIES
-      // axios
-      //   .get(`${baseURL}categories`)
-      //   .then((res) => {
-      //     setCategories(res.data);
-      //   })
-      //   .catch((error) => {
-      //     console.log("Api call error");
-      //   });
+          // Now that you have the location, fetch parties
+          const response = await axios.get(
+            `${baseURL}parties?userLat=${location.coords.latitude}&userLon=${location.coords.longitude}`
+          );
+          const responseFeatured = await axios.get(
+            `${baseURL}parties/featured/${5}`
+          );
 
+          setFeaturedParties(responseFeatured.data);
+          setParties(response.data);
+          setPartiesFiltered(response.data);
+          setLoading(false);
+        } catch (error) {
+          console.log("Error:", error);
+        }
+      };
+
+      fetchLocationAndParties(); // Call the function to fetch location and parties
       return () => {
         setParties([]);
+        setFeaturedParties([]);
         setPartiesFiltered([]);
         setFocus();
-        setCategories([]);
         setActive();
-        setInitialState();
       };
     }, [])
   );
@@ -125,47 +146,11 @@ const PartyContainer = (props) => {
     setClicked(false);
   };
 
-
-  //SHRINK HEADER
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, 150],
-    outputRange: [150, 100],
-    extrapolate: 'clamp',
-  });
-
-  const headerTop = scrollY.interpolate({
-    inputRange: [0, 150],
-    outputRange: [0, -100],
-    extrapolate: 'clamp',
-  });
-
-  useEffect(() => {
-    Animated.timing(scrollY, {
-      toValue: 1,
-      duration: 1,
-      useNativeDriver: false,
-    }).start();
-  }, []);
-
-
-
   return (
     <>
-    {loading == false ? (
-          <View style={{ flex: 1 }}>
-          <Animated.View style={[styles.searchContainer,
-          
-{          height: headerHeight, 
-          position: 'absolute', 
-          top: headerTop, 
-          left: 0, 
-          right: 0
-        }
-          ]}>
-            <TouchableOpacity style={styles.mapPinButton} onPress={() => props.navigation.navigate("Party Map View")}>
-              <Feather name="map-pin" size={40} color="white" />
-            </TouchableOpacity>
+      {loading == false ? (
+        <View style={{ flex: 1 }}>
+          <View style={styles.searchContainer}>
             <SearchBar
               searchParty={searchParty}
               clicked={clicked}
@@ -173,44 +158,32 @@ const PartyContainer = (props) => {
               openList={openList}
               onBlur={onBlur}
             />
-            <TouchableOpacity style={styles.infoButton}>
-              <Feather name="info" size={40} color="white" />
-            </TouchableOpacity>
+          </View>
 
-
-          </Animated.View>
-
-          
           {focus == true ? (
             <SearchedParty
-             username={userProfile._id}
+              username={userProfile._id}
               partiesFiltered={partiesFiltered}
               navigation={props.navigation}
             />
           ) : (
-
-            <ScrollView
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: false }
-            )}
-            scrollEventThrottle={16}
-            contentContainerStyle={{ paddingTop: 200 }}
-            >
+            <ScrollView>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>Parties</Text>
               </View>
-    
               <View>
                 <Text style={styles.popularTitle}>Popular Today</Text>
-                <Banner props={parties}/>
+                <Banner
+                  navigation={props.navigation}
+                  featuredData={featuredParties}
+                  username={userProfile._id}
+                />
               </View>
-    
+
               <View style={styles.categoryContainer}>
                 <Text style={styles.recTitle}>Recommended</Text>
-                {
-                  userProfile ? (
-                    <FlatList
+                {userProfile ? (
+                  <FlatList
                     data={parties}
                     renderItem={({ item }) => (
                       <PartyList
@@ -222,42 +195,39 @@ const PartyContainer = (props) => {
                     )}
                     keyExtractor={(item) => item._id}
                   />
-                    
-                  ) : (null)
-                }
-
+                ) : null}
               </View>
             </ScrollView>
           )}
         </View>
-    ):(
-      <View style={styles.loadingIndicator}>
-        <ActivityIndicator size="large" color="orange"/>
-      </View>
-    )}
+      ) : (
+        <View style={styles.loadingIndicator}>
+          <ActivityIndicator size="large" color="orange" />
+        </View>
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  loadingIndicator:{
+  loadingIndicator: {
     justifyContent: "center",
-    alignItems:"center",
-    flex: 1
+    alignItems: "center",
+    flex: 1,
   },
   titleContainer: {
     borderBottomColor: "orange",
     borderBottomWidth: 5,
     width: width / 2,
     marginLeft: width - width / 1.1,
-    marginTop: 5,
+    marginTop: 30,
   },
   title: {
     alignItems: "center",
     justifyContent: "center",
     fontSize: "44",
     fontWeight: "500",
-    color:"black",
+    color: "black",
     // height: height / 9,
     // paddingTop: height / 20,
   },
@@ -279,24 +249,21 @@ const styles = StyleSheet.create({
     paddingTop: 35,
   },
   categoryContainer: {
-    borderTopWidth: 1,
-    borderColor: "#e0dede",
     paddingBottom: 30,
   },
   searchContainer: {
-
     paddingBottom: 15,
-    paddingTop: 70,
+    paddingTop: 60,
     flexDirection: "row",
     justifyContent: "center",
-    // borderBottomColor: "#C5C5C5",
-    // borderBottomWidth: 0.5,
+    // borderBottomColor: "rgb(230,230,230)",
+    // borderBottomWidth: 1,
     backgroundColor: "#fab164",
   },
   infoButton: {
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 15
+    marginLeft: 15,
   },
   mapPinButton: {
     marginRight: 15,

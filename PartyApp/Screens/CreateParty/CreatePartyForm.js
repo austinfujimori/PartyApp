@@ -32,8 +32,16 @@ import mime from "mime";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-import Moment from "moment"
+import Moment from "moment";
 
+import FeatherIcon from "react-native-vector-icons/Feather";
+
+import MapView from "react-native-maps";
+
+//GOOGLE CLOUD ADDRESS AUTOCOMPLETE PICKER
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { BorderlessButton } from "react-native-gesture-handler";
+import { set } from "date-fns";
 
 var { width, height } = Dimensions.get("window");
 
@@ -57,32 +65,22 @@ const CreatePartyForm = (props) => {
   const [mainImage, setMainImage] = useState();
 
   //ADDRESS PICKER
-  const [address, setAddress] = useState();
+  const [address, setAddress1] = useState();
+  const [longitude, setLongitude] = useState();
+  const [latitude, setLatitude] = useState();
 
   //DATE
   const [dateOf, setDateOf] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
-  const [locked, setLocked] = useState(false)
+  const [locked, setLocked] = useState(false);
 
   const onChangeDate = (event, selectedDate) => {
+    console.log(selectedDate)
     const currentDate = selectedDate;
     setShow(false);
     setDateOf(currentDate);
   };
-
-  // useEffect(() => {
-
-  // axios
-  // .get(`${baseURL}categories`)
-  // .then((res) => setCategories(res.data))
-  // .catch((error) => alert("Error to load categories"))
-
-  //   return () => {
-  //     setCategories([])
-  //   }
-
-  // }, [])
 
   useEffect(() => {
     if (!props.route.params.item) {
@@ -90,12 +88,14 @@ const CreatePartyForm = (props) => {
     } else {
       setItem(props.route.params.item);
       setPrice(props.route.params.item.price.toString());
-      setAddress(props.route.params.item.address);
+      setAddress1(props.route.params.item.address);
       setDescription(props.route.params.item.description);
       setCapacity(props.route.params.item.capacity.toString());
-      setMainImage(props.route.params.item.mainImage);
+      setMainImage(props.route.params.item.image);
       setImage(props.route.params.item.image);
-      setLocked(true)
+      setLongitude(props.route.params.item.longitude);
+      setLatitude(props.route.params.item.latitude);
+      setLocked(true);
     }
 
     //Image Picker
@@ -127,258 +127,284 @@ const CreatePartyForm = (props) => {
 
   const addParty = () => {
     if (
-      image == "" ||
+      mainImage == null ||
+      image == null ||
+      address == null ||
       address == "" ||
+      description == null ||
       description == "" ||
+      price == null ||
       price == "" ||
+      capacity == null ||
       capacity == "" ||
-      dateOf == ""
+      dateOf == null
     ) {
-      setError("Please fill in all of the fields");
-    }
-
-    let formData = new FormData();
-
-    const newImageUri = image.split("file:/").join("");
-
-    formData.append("image", {
-      uri: newImageUri,
-      type: mime.getType(newImageUri),
-      name: newImageUri.split("/").pop(),
-    });
-
-    if (!props.route.params.item) {
-      formData.append("host", userProfile._id);
-    }
-
-    formData.append("address", address);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("capacity", capacity);
-
-    if (!locked){
-      formData.append("dateOf", Moment(dateOf).format("YYYY-MM-DD") + "T00:00:00.000+00:00");
-    }
-    
-
-    // formData.append("rating", rating);
-    // formData.append("isFeatured", isFeatured);
-    const config = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    if (item !== null) {
-      // UPDATE PARTY
-      axios
-        .put(`${baseURL}parties/${item._id}`, formData, config)
-        .then((res) => {
-          if (res.status == 200 || res.status == 201) {
-            Toast.show({
-              topOffset: 60,
-              type: "success",
-              text1: "Party updated",
-              text2: "",
-            });
-            setTimeout(() => {
-              props.navigation.navigate("Create Party Container");
-            }, 500);
-          }
-        })
-        .catch((error) => {
-          Toast.show({
-            topOffset: 60,
-            type: "error",
-            text1: "Something went wrong",
-            text2: "Please try again",
-          });
-        });
+      alert("Please fill in all of the fields");
+      return;
     } else {
-      // ADD NEW PARTY
-      axios
-        .post(`${baseURL}parties`, formData, config)
-        .then((res) => {
-          if (res.status == 200 || res.status == 201) {
+      let formData = new FormData();
+
+      const newImageUri = image.split("file:/").join("");
+
+      formData.append("image", {
+        uri: newImageUri,
+        type: mime.getType(newImageUri),
+        name: newImageUri.split("/").pop(),
+      });
+
+      if (!props.route.params.item) {
+        formData.append("host", userProfile._id);
+      }
+
+      formData.append("address", address);
+      formData.append("longitude", longitude);
+      formData.append("latitude", latitude);
+      formData.append("description", description);
+      formData.append("price", price);
+      formData.append("capacity", capacity);
+
+      if (!locked) {
+        formData.append(
+          "dateOf",
+          Moment(dateOf).format("YYYY-MM-DD") + "T17:52:28.128+00:00"
+        );
+      }
+
+      // formData.append("rating", rating);
+      // formData.append("isFeatured", isFeatured);
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      if (item !== null) {
+        // UPDATE PARTY
+        axios
+          .put(`${baseURL}parties/${item._id}`, formData, config)
+          .then((res) => {
+            if (res.status == 200 || res.status == 201) {
+              Toast.show({
+                topOffset: 60,
+                type: "success",
+                text1: "Party updated",
+                text2: "",
+              });
+              setTimeout(() => {
+                props.navigation.navigate("Create Party Container");
+              }, 500);
+            }
+          })
+          .catch((error) => {
             Toast.show({
               topOffset: 60,
-              type: "success",
-              text1: "Party created",
-              text2: "",
+              type: "error",
+              text1: "Something went wrong",
+              text2: "Please try again",
             });
-            setTimeout(() => {
-              props.navigation.navigate("Create Party Container");
-            }, 500);
-          }
-        })
-        .catch((error) => {
-          Toast.show({
-            topOffset: 60,
-            type: "error",
-            text1: "Something went wrong",
-            text2: "Please try again",
           });
-        });
+      } else {
+        // ADD NEW PARTY
+        axios
+          .post(`${baseURL}parties`, formData, config)
+          .then((res) => {
+            if (res.status == 200 || res.status == 201) {
+              Toast.show({
+                topOffset: 60,
+                type: "success",
+                text1: "Party created",
+                text2: "",
+              });
+              setTimeout(() => {
+                props.navigation.navigate("Create Party Container");
+              }, 500);
+            }
+          })
+          .catch((error) => {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: "Something went wrong",
+              text2: "Please try again",
+            });
+          });
+      }
     }
   };
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer}
-      stickyHeaderIndices={[0]}
-      >
-
-      <View style={{marginBottom: -110}}>
-          <View style={{height: 50}}></View>
-          <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.navigate("Create Party Container")}>
-            <Icon name="chevron-left" color="white" size={40}/>
-          </TouchableOpacity>
-          </View>
-
-        <View>
-          <ImageBackground
-            source={{
-              uri: image
-                ? image
-                : "https://pbs.twimg.com/media/EiZTInlWsAEi3a9.jpg",
-            }}
-            style={styles.image}
-            imageStyle={image ? styles.image : styles.iconImage}
+      <ScrollView style={styles.scrollContainer} stickyHeaderIndices={[0]}>
+        <View style={{ marginBottom: -110 }}>
+          <View style={{ height: 50 }}></View>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => props.navigation.navigate("Create Party Container")}
           >
-            
-
-            <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-              <Text style={styles.imagePickerText}>Select Image</Text>
-            </TouchableOpacity>
-          </ImageBackground>
+            <Icon name="chevron-down" color="white" size={40} />
+          </TouchableOpacity>
         </View>
 
-        <Text style={[styles.fieldLabel, {marginTop: 20}]}>
-          Address
-        </Text>
-        {/* ADDRESS */}
-        <TextInput
-        style={styles.fieldContainer}
-        placeholder={"Enter the address..."}
-        placeholderTextColor={"gray"}
-        name={"Address"}
-        id={"address"}
-        value={address}
-        autoCorrect={false}
-        onChangeText={(text) => setAddress(text)}
-      ></TextInput>
+        <View>
+          {image ? (
+            <View>
+              <ImageBackground
+                source={{
+                  uri: image,
+                }}
+                style={styles.image}
+                imageStyle={image ? styles.image : styles.iconImage}
+              >
+                <View></View>
+                <TouchableOpacity
+                  style={styles.imagePicker}
+                  onPress={pickImage}
+                >
+                  <Text style={styles.imagePickerText}>Select Image</Text>
+                </TouchableOpacity>
+              </ImageBackground>
+            </View>
+          ) : (
+            <View style={styles.image}>
+              <View style={{ height: 75 }}></View>
+              <FeatherIcon name="camera" color="white" size={250} />
 
+              <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                <Text style={styles.imagePickerText}>Select Image</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
 
+        <Text style={[styles.fieldLabel, { marginTop: 30 }]}>Address</Text>
 
-        <Text style={styles.fieldLabel}>
-          Description
-        </Text>
+        <View
+          style={{
+            marginTop: 10,
+            borderColor: "rgb(200, 200, 200)",
+            marginHorizontal: 20,
+            marginBottom: 30,
+            justifyContent: "center",
+            borderBottomWidth: 1,
+          }}
+        >
+          {/* GOOGLE CLOUD ADDRESS PICKER */}
+          <GooglePlacesAutocomplete
+            styles={{
+              textInput: {
+                placeholderTextColor: "gray",
+                fontFamily: "Avenir",
+                fontSize: 17,
+              },
+            }}
+            placeholder="Enter party address..."
+            fetchDetails={true}
+            onPress={(data, details = null) => {
+              // 'data' is the selected address
+              // 'details' is the full details of the selected address
+              setAddress1(details.formatted_address);
+              setLatitude((data, details).geometry.location.lat);
+              setLongitude((data, details).geometry.location.lng);
+            }}
+            minLength={2}
+            query={{
+              key: "AIzaSyAhH2pS0OsCw3LMOfJsOMTPLx0o3v9FiDI",
+              language: "en",
+            }}
+            nearbyPlacesAPI="GooglePlacesSearch"
+            debounce={400}
+          />
+        </View>
+
+        <Text style={styles.fieldLabel}>Description</Text>
 
         {/* DESCRIPTION */}
         <TextInput
-        style={[styles.fieldContainer, {paddingTop: 20, height: height/5}]}
-        placeholder={"Enter the party description..."}
-        placeholderTextColor={"gray"}
-        name={"Description"}
-        id={"description"}
-        value={description}
-        multiline={true}
-        onChangeText={(text) => setDescription(text)}
-      ></TextInput> 
+          style={[
+            styles.fieldContainer,
+            { paddingTop: 20, height: height / 5 },
+          ]}
+          placeholder={"Enter party description..."}
+          placeholderTextColor={"gray"}
+          name={"Description"}
+          id={"description"}
+          value={description}
+          multiline={true}
+          onChangeText={(text) => setDescription(text)}
+        ></TextInput>
 
-
-
-
-
-
-
-
-
-
-        <Text style={styles.fieldLabel}>
-          Price
-        </Text>
+        <Text style={styles.fieldLabel}>Price</Text>
 
         {/* PRICE */}
-<TextInput
-   style={styles.fieldContainer}
-        placeholder={"Enter the price..."}
-        placeholderTextColor={"gray"}
-        name={"Price"}
-        id={"price"}
-        value={price}
-        autoCorrect={false}
-        onChangeText={(text) => setPrice(text)}
-        keyboardType="numeric"
-      ></TextInput>
+        <TextInput
+          style={styles.fieldContainer}
+          placeholder={"Enter price..."}
+          placeholderTextColor={"gray"}
+          name={"Price"}
+          id={"price"}
+          value={price}
+          autoCorrect={false}
+          onChangeText={(text) => setPrice(text)}
+          keyboardType="numeric"
+        ></TextInput>
 
-        <Text style={styles.fieldLabel}>
-          Capacity
-        </Text>
+        <Text style={styles.fieldLabel}>Capacity</Text>
 
-          {/* Capacity */}
-          <TextInput
-   style={styles.fieldContainer}
-        placeholder={"Enter the capacity..."}
-        placeholderTextColor={"gray"}
-        name={"Capacity"}
-        id={"capacity"}
-        value={capacity}
-        autoCorrect={false}
-        onChangeText={(text) => setCapacity(text)}
-        keyboardType="numeric"
-      ></TextInput>
+        {/* Capacity */}
+        <TextInput
+          style={styles.fieldContainer}
+          placeholder={"Enter capacity..."}
+          placeholderTextColor={"gray"}
+          name={"Capacity"}
+          id={"capacity"}
+          value={capacity}
+          autoCorrect={false}
+          onChangeText={(text) => setCapacity(text)}
+          keyboardType="numeric"
+        ></TextInput>
 
-
-
-
-
-<Text style={styles.fieldLabel}>
-          Date
-        </Text>
-
+        <Text style={styles.fieldLabel}>Date</Text>
 
         <View style={styles.dateContainer}>
-        {locked ? (
+          {locked ? (
+            <Text
+              style={{
+                marginTop: 15,
+                alignSelf: "center",
+                marginBottom: 20,
+                color: "gray",
+              }}
+            >
+              You cannot change the date of your party.
+            </Text>
+          ) : (
+            <DateTimePicker
+              testID="dateOf"
+              value={dateOf}
+              mode={mode}
+              is24Hour={true}
+              onChange={onChangeDate}
+              style={styles.datePicker}
+              display="spinner"
+              minimumDate={new Date()}
+            />
+          )}
+        </View>
 
-          <Text style={{marginTop: 15, alignSelf: "center", marginBottom: 20, color: "gray"}}>
-            You cannot change the date of your party.
-          </Text>
-        ):(
-          <DateTimePicker
-          testID="dateOf"
-          value={dateOf}
-          mode={mode}
-          is24Hour={true}
-          onChange={onChangeDate}
-          style={styles.datePicker}
-          display="spinner"
-        />
-        )
-
-        }
-                </View>
-
-         <View style={styles.confirmContainer}>
-        <TouchableOpacity
-          style={styles.confirmButton}
-          onPress={() => addParty()}
-        >
-          <Text style={styles.payText}>Confirm</Text>
-        </TouchableOpacity>
-
+        <View style={styles.confirmContainer}>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={() => addParty()}
+          >
+            <Text style={styles.payText}>Confirm</Text>
+          </TouchableOpacity>
         </View>
 
         {err ? <Error message={err} /> : null}
-
-
-
       </ScrollView>
 
-      <View>
-        
-      </View>
+      <View></View>
     </View>
   );
 };
@@ -388,7 +414,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 60,
     alignSelf: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   datePicker: {
     marginLeft: 5,
@@ -406,12 +432,12 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     marginBottom: 20,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   fieldLabel: {
     marginLeft: 25,
-    fontWeight: "500",
-    fontSize: 20,
+    fontWeight: "700",
+    fontSize: 17,
   },
   container: {
     // backgroundColor: "rgb(159,162,170)",
@@ -431,21 +457,24 @@ const styles = StyleSheet.create({
   },
   payText: {
     color: "white",
-    fontSize: 25,
+    fontSize: 17,
     fontWeight: "600",
     alignSelf: "center",
   },
-
+  imageActual: {},
   image: {
     width: width,
     height: width,
     alignSelf: "center",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#ff7575",
   },
   imagePicker: {
     backgroundColor: "rgba(0,0,0, 0.6)",
     padding: 15,
     alignItems: "center",
+    width: "100%",
     justifyContent: "center",
   },
   imagePickerText: {
@@ -454,14 +483,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "500",
   },
-  backButton:{
+  backButton: {
     paddingVertical: 5,
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     width: 50,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems:'center',
-    marginLeft: 10
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
 });
 

@@ -23,10 +23,15 @@ const Login = (props) => {
   const [error, setError] = useState("")
 
   useEffect(() => {
+    checkLoginStatus(context.dispatch)
+
+    //CHECK LOGIN STATUS
     if (context.stateUser.isAuthenticated === true) {
       props.navigation.navigate("Main Navigator")
     }
   }, [context.stateUser.isAuthenticated])
+
+
 
   const handleSubmit = () => {
     const user = {

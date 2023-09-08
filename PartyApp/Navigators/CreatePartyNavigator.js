@@ -3,9 +3,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import CreatePartyContainer from "../Screens/CreateParty/CreatePartyContainer"
 import CreatePartyForm from "../Screens/CreateParty/CreatePartyForm";
+import PartyHistoryContainer from "../Screens/CreateParty/PartyHistoryContainer";
 import PartyView from "./PartyView";
 
 import { TransitionPresets } from '@react-navigation/stack';
+
 
 const Stack = createStackNavigator();
 
@@ -29,6 +31,16 @@ function MyStack() {
       <Stack.Screen
         name="Create Party Container"
         component={CreatePartyContainer}
+        options={{
+          headerShown: false,
+          cardStyle: {
+            backgroundColor: "white",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Party History Container"
+        component={PartyHistoryContainer}
         options={{
           headerShown: false,
           cardStyle: {

@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import SearchIcon from "../../assets/search.png"
+import SearchIcon from "../../assets/search.png";
 
 import PartyList from "./PartyList";
 import SearchBar from "../../Shared/SearchBar";
@@ -87,30 +87,30 @@ const PartyMapView = (props) => {
   return (
     <>
       {loading == false ? (
-        
         <View style={{ flex: 1 }}>
-
           <MapView
             style={{ flex: 1 }}
             region={{
-              latitude: 37.453220,
-              longitude: -122.183220,
+              latitude: 37.45322,
+              longitude: -122.18322,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
             showsUserLocation={true}
           >
-<View>
-<TouchableOpacity style={styles.backButton} onPress={() => props.navigation.navigate("PartiesMain")}>
-            <Image 
-            style={{ height: 60, width: 60, resizeMode : 'contain' }}
-            source={{uri :'https://cdn-icons-png.flaticon.com/512/9714/9714068.png'}}  
-            />
-            </TouchableOpacity>
-</View>
-
-
-
+            <View>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => props.navigation.navigate("PartiesMain")}
+              >
+                <Image
+                  style={{ height: 60, width: 60, resizeMode: "contain" }}
+                  source={{
+                    uri: "https://cdn-icons-png.flaticon.com/512/9714/9714068.png",
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
           </MapView>
         </View>
       ) : (
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   backButton: {
     position: "absolute",
     marginTop: 60,
-    marginLeft: 20
-  }
+    marginLeft: 20,
+  },
 });
 export default PartyMapView;

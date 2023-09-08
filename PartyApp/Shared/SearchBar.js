@@ -1,7 +1,7 @@
 // SearchBar.js
 import React from "react";
 import { StyleSheet, TextInput, View, Keyboard, Button } from "react-native";
-import { Feather, Entypo } from "@expo/vector-icons";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 import SearchedParty from "../Screens/Parties/SearchedParty";
 
 const SearchBar = ({ clicked, searchParty, setClicked, openList, onBlur, username }) => {
@@ -23,19 +23,17 @@ const SearchBar = ({ clicked, searchParty, setClicked, openList, onBlur, usernam
         <TextInput
           style={styles.input}
           placeholder="Search host name"
-          placeholderTextColor="white"
+          placeholderTextColor="rgba(256,256,256, 0.7)"
           onChangeText={(text) => searchParty(text)}
           onFocus={
             openList
           }
         />
-        {/* //cross Icon, depending on whether the search bar is clicked or not
-        {clicked && (
-          <Entypo
-            name="cross"
+        {/* {clicked && (
+          <MaterialIcons
+            name="cancel"
             size={20}
-            color="black"
-            style={{ padding: 1 }}
+            color="white"
             onPress={onBlur}
           />
         )} */}
@@ -59,37 +57,37 @@ export default SearchBar;
 const styles = StyleSheet.create({
   container: {
     alignSelf: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
-    width: "65%",
+    width: "90%",
     backgroundColor:"transparent"
   },
   searchBar__unclicked: {
-    padding: 11,
+    padding: 16,
     flexDirection: "row",
-    width: "95%",
-    backgroundColor: "#ff9842",
+    width: "100%",
+    backgroundColor: "#ff9c4a",
     borderRadius: 30,
     borderWidth: 0.3,
     borderColor: "white",
     alignItems: "center",
   },
   searchBar__clicked: {
-    padding: 11,
+    padding: 16,
     flexDirection: "row",
     borderWidth: 0.3,
     borderColor: "white",
-    width: "70%",
-    backgroundColor: "#ff9842",
+    width: "80%",
+    backgroundColor: "#ff9c4a",
     borderRadius: 30,
     alignItems: "center",
-    justifyContent: "space-evenly",
+    justifyContent: "flex-start",
   },
   input: {
     color: "white",
     fontSize: 17,
     marginLeft: 10,
-    width: "90%",
+    width: "100%",
   },
 });

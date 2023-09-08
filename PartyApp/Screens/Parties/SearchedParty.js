@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -7,36 +6,31 @@ import {
   Text,
   Dimensions,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 
-import Moment from 'moment';
-
-// ERROR
-// {partiesFiltered.length > 0 ? (
+import Moment from "moment";
 
 var { width } = Dimensions.get("window");
 
-
-
 const SearchedParty = (props) => {
   const { partiesFiltered } = props;
-  const username = props.username
+  const username = props.username;
 
-
-  Moment.locale('de');
+  //Moment.locale('de');
   return (
     <ScrollView style={styles.listContainer}>
       {partiesFiltered.length > 0 ? (
         partiesFiltered.map((item) => (
           <TouchableOpacity
             style={styles.thumbnail}
-            onPress={() => {props.navigation.navigate("Party Detail", 
-            {username: username, 
-              item: item,
-              tabRoute: "PartiesMain"
-            }
-            )}}
+            onPress={() => {
+              props.navigation.navigate("Party Detail", {
+                username: username,
+                item: item,
+                tabRoute: "PartiesMain",
+              });
+            }}
             key={item._id}
           >
             <Image
@@ -47,8 +41,12 @@ const SearchedParty = (props) => {
             <View style={styles.thumbnailTextBox}>
               <Text style={styles.hostName}>{item.host.name}</Text>
 
-              <Text style={styles.dateText}>{Moment(item.dateOf).format('ddd, MMMM Do')}</Text>
-              <Text style={styles.dateText}>{item.memberCount}/{item.capacity} members</Text>
+              <Text style={styles.dateText}>
+                {Moment(item.dateOf).format("ddd, MMMM Do")}
+              </Text>
+              <Text style={styles.dateText}>
+                {item.memberCount}/{item.capacity} members
+              </Text>
               <Text style={styles.priceText}>${item.price}</Text>
             </View>
           </TouchableOpacity>
@@ -74,7 +72,7 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderBottomColor: "#C5C5C5",
     flexDirection: "column",
-    justifyContent:"center",
+    justifyContent: "center",
   },
   thumbnailImage: {
     width: width / 3,
@@ -84,27 +82,27 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 5,
   },
-  thumbnailTextBox:{
-     marginLeft: width / 3 + 30
+  thumbnailTextBox: {
+    marginLeft: width / 3 + 30,
   },
-  hostName:{
-     fontSize: 25,
-     fontFamily: "Avenir"
+  hostName: {
+    fontSize: 20,
+    fontFamily: "Avenir",
   },
-  dateText:{
-     fontSize: 18,
-     color: "gray",
-     fontFamily: "Avenir"
+  dateText: {
+    fontSize: 18,
+    color: "gray",
+    fontFamily: "Avenir",
   },
-  priceText:{
+  priceText: {
     fontSize: 18,
     fontFamily: "Avenir",
-    color: "#ff9100"
- },
+    color: "#ff9100",
+  },
   noParty: {
-    alignSelf:"center",
-    marginTop: 40
-  }
+    alignSelf: "center",
+    marginTop: 40,
+  },
 });
 
 export default SearchedParty;

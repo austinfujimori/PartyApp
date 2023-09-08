@@ -10,11 +10,11 @@ import {
   Alert,
 } from "react-native";
 
-import Toast from "react-native-toast-message"
+import Toast from "react-native-toast-message";
 import { connect } from "react-redux";
 import * as actions from "../../Redux/Actions/ticketsActions";
 
-import Moment from 'moment';
+import Moment from "moment";
 
 var { width, height } = Dimensions.get("window");
 
@@ -33,47 +33,48 @@ const PartyCard = (props) => {
     address,
   } = props;
 
-  Moment.locale('de');
+  //Moment.locale('de');
 
   return (
     <View style={styles.container}>
       <Image style={styles.image} resizeMode="cover" source={{ uri: image }} />
 
       <View style={styles.textContainer}>
+        <Text style={styles.date}>
+          {Moment(dateOf).format("ddd, MMMM Do")}
+          {/* {dateOf.length > 15 ? dateOf.substring(0, 15 - 3) + "..." : dateOf} */}
+        </Text>
+
+        <Text style={styles.distanceText}>
+          {address.split(",")[0] + "," + address.split(",")[1]}
+        </Text>
+        <Text style={styles.membersText}>
+          {memberCount} / {capacity} members
+        </Text>
+
         <View style={styles.SideBySide}>
-          <View>
-            <Text style={styles.date}>
-            {Moment(dateOf).format('ddd, MMMM Do')}
-              {/* {dateOf.length > 15 ? dateOf.substring(0, 15 - 3) + "..." : dateOf} */}
-            </Text>
-            <Text style={styles.membersText}>
-              {memberCount} / {capacity} members
-            </Text>
-
-            <Text style={styles.distanceText}>{address}</Text>
-
-            <Text style={styles.hostText}>
-              {host.name.length > 15
-                ? host.name.substring(0, 15 - 3) + "..."
-                : host.name}
-            </Text>
-          </View>
+          <Text style={styles.hostText}>
+            {host.name.length > 15
+              ? host.name.substring(0, 15 - 3) + "..."
+              : host.name}
+          </Text>
 
           {capacity - memberCount > 0 ? (
             <TouchableOpacity
               style={styles.payButton}
               onPress={() => {
-                props.navigation.navigate("Ticket Checkout", {username: username, 
+                props.navigation.navigate("Ticket Checkout", {
+                  username: username,
                   _id: _id,
-                    host: host,
-                    memberCount: memberCount,
-                    description: description,
-                    dateOf: dateOf,
-                    price: price,
-                    image: image,
-                    count: count,
-                    capacity: capacity,
-                    address: address,
+                  host: host,
+                  memberCount: memberCount,
+                  description: description,
+                  dateOf: dateOf,
+                  price: price,
+                  image: image,
+                  count: count,
+                  capacity: capacity,
+                  address: address,
                 });
               }}
             >
@@ -104,27 +105,27 @@ const mapDispatchToProps = (dispatch) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: width / 1.1,
-    marginTop: 20,
+    width: width / 1.13,
+    marginTop: 25,
+    marginBottom: 25,
   },
   textContainer: {
-    marginTop: width / 1.3 + 20,
+    marginTop: width / 1.2 + 25,
     marginLeft: 5,
   },
   image: {
-    marginTop: 10,
-    width: width / 1.1,
-    height: width / 1.3,
+    width: width / 1.13,
+    height: width / 1.2,
     backgroundColor: "white",
     position: "absolute",
     borderRadius: 15,
     alignSelf: "center",
     borderWidth: 0,
-    borderColor: "#ff7605"
+    borderColor: "#ff7605",
   },
   date: {
     fontFamily: "Avenir",
-    fontSize: 25,
+    fontSize: 20,
   },
   payButton: {
     borderWidth: 2,
@@ -132,35 +133,34 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 10,
     padding: 7,
-    alignSelf: "flex-end",
     marginRight: 5,
   },
   payText: {
     fontFamily: "Avenir",
     color: "#ff7605",
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "500",
     alignSelf: "center",
   },
   hostText: {
     fontFamily: "Avenir",
-    fontSize: 22,
+    fontSize: 20,
     color: "#ff7605",
   },
   SideBySide: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "space-between",
   },
   distanceText: {
     fontFamily: "Avenir",
     fontSize: 20,
-    color: "#656565",
+    color: "rgb(160,160,160)",
   },
   membersText: {
     fontSize: 20,
     fontFamily: "Avenir",
-    color: "#656565",
+    color: "rgb(160,160,160)",
   },
 });
 

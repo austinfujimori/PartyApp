@@ -20,7 +20,11 @@ const api = process.env.API_URL;
 const partiesRouter = require("./routers/parties");
 const usersRouter = require("./routers/users");
 const ordersRouter = require("./routers/orders");
+const pastOrdersRouter = require("./routers/pastOrders")
+const pastPartiesRouter = require("./routers/pastParties")
 const authJwt = require("./helpers/jwt");
+const paypalRoutes = require('./routers/paypalRoutes');
+
 
 //Middleware
 //replace body parser with express.json()
@@ -36,6 +40,9 @@ app.use("/public/uploads", express.static(__dirname + "/public/uploads"))
 app.use(`${api}/parties`, partiesRouter);
 app.use(`${api}/users`, usersRouter);
 app.use(`${api}/orders`, ordersRouter);
+app.use(`${api}/pastOrders`, pastOrdersRouter);
+app.use(`${api}/pastParties`, pastPartiesRouter);
+app.use('/api/paypal', paypalRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)

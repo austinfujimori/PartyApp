@@ -6,39 +6,23 @@ import {
   Dimensions,
   View,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import Swiper from "react-native-swiper/src";
 import PartyCard from "../Screens/Parties/PartyCard";
+import Moment from "moment";
 
 var { width, height } = Dimensions.get("window");
 
-import FeaturedCard from "./FeaturedCard";
-
-const data = require("../assets/data/parties.json");
-
 const Banner = (props) => {
-  // const partyList = props.data
-
-
-  //number of featured parties is 5
-  var size = 5;
-  const featuredData = [];
-  for (const partyItem of data) {
-    if (featuredData.length > size - 1) {
-      break;
-    }
-    if (partyItem.isFeatured) {
-      featuredData.push(partyItem);
-    }
-  }
+  const featuredData = props.featuredData;
+  const username = props.username;
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.swiper}>
           <Swiper
-            style={{ height: width / 2 }}
             showButtons={false}
             autoplay={true}
             autoplayTimeout={4}
@@ -46,53 +30,84 @@ const Banner = (props) => {
           >
             {featuredData.map((item) => {
               return (
-                <View>
-                  <Image
-                    key={item._id.$oid}
-                    style={styles.imageBanner}
-                    resizeMode="cover"
-                    source={{ uri: item.image }}
-                  />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.date}>{item.dateOf}</Text>
-                    <Text style={styles.membersText}>
-                      {item.memberCount} / {item.capacity} members
-                    </Text>
-                    <Text style={styles.distanceText}>{item.address}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate("Party Detail", {
+                      item: item,
+                      username: username,
+                      tabRoute: "PartiesMain",
+                    });
+                  }}
+                  style={{
+                    width: width,
+                    alignItems: "center",
+                    backgroundColor: "white",
+                  }}
+                >
+                  <View style={{ alignSelf: "center" }}>
+                    <Image
+                      key={item._id}
+                      style={styles.imageBanner}
+                      resizeMode="cover"
+                      source={{ uri: item.image }}
+                    />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.date}>
+                        {Moment(item.dateOf).format("ddd, MMMM Do")}
+                      </Text>
 
-                    <View style={styles.SideBySide}>
-                    <Text style={styles.hostText}>
-                      {item.host.name.length > 15
-                        ? item.host.name.substring(0, 15 - 3) + "..."
-                        : item.host.name}
-                    </Text>
+                      <Text style={styles.distanceText}>
+                        {item.address.split(",")[0] +
+                          "," +
+                          item.address.split(",")[1]}
+                      </Text>
+                      <Text style={styles.membersText}>
+                        {item.memberCount} / {item.capacity} members
+                      </Text>
+                      <View style={styles.SideBySide}>
+                        <Text style={styles.hostText}>
+                          {item.host.name.length > 15
+                            ? item.host.name.substring(0, 15 - 3) + "..."
+                            : item.host.name}
+                        </Text>
 
-          {item.capacity - item.memberCount > 0 ? (
-            <TouchableOpacity
-              style={styles.payButton}
-          //     onPress={() => {
-          //       props.addItemToTickets(props);
-          //     }}
-            >
-              <Text style={styles.payText}>Pay ${item.price}</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.payButton}
-              onPress={() => {
-                Alert.alert("Party is currently full");
-              }}
-            >
-              <Text style={styles.payText}>Party Full</Text>
-            </TouchableOpacity>
-          )}
+                        {item.capacity - item.memberCount > 0 ? (
+                          <TouchableOpacity
+                            style={styles.payButton}
+                            onPress={() => {
+                              props.navigation.navigate("Ticket Checkout", {
+                                username: username,
+                                _id: item._id,
+                                host: item.host,
+                                memberCount: item.memberCount,
+                                description: item.description,
+                                dateOf: item.dateOf,
+                                price: item.price,
+                                image: item.image,
+                                count: item.count,
+                                capacity: item.capacity,
+                                address: item.address,
+                              });
+                            }}
+                          >
+                            <Text style={styles.payText}>
+                              Pay ${item.price}
+                            </Text>
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            style={styles.payButton}
+                            onPress={() => {
+                              Alert.alert("Party is currently full");
+                            }}
+                          >
+                            <Text style={styles.payText}>Party Full</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
                     </View>
                   </View>
-
-                  
-                </View>
-
-                
+                </TouchableOpacity>
               );
             })}
           </Swiper>
@@ -112,21 +127,20 @@ const styles = StyleSheet.create({
     borderColor: "white",
   },
   swiper: {
-    width: width,
-    height: 450,
+    height: width / 1.2 + 220,
     alignItems: "center",
   },
   imageBanner: {
-    height: 250,
-    width: width - 40,
+    alignSelf: "center",
+    height: width / 1.2,
+    width: width / 1.13,
     borderRadius: 10,
-    marginHorizontal: 20,
   },
 
   membersText: {
     fontSize: 20,
     fontFamily: "Avenir",
-    color: "#656565",
+    color: "rgb(160,160,160)",
   },
   SideBySide: {
     flexDirection: "row",
@@ -136,15 +150,15 @@ const styles = StyleSheet.create({
   distanceText: {
     fontFamily: "Avenir",
     fontSize: 20,
-    color: "#656565",
+    color: "rgb(160,160,160)",
   },
   date: {
     fontFamily: "Avenir",
-    fontSize: 25,
+    fontSize: 20,
   },
   textContainer: {
-    marginLeft: 25,
-    marginTop: 10,
+    marginTop: 15,
+    marginLeft: 5,
   },
   payButton: {
     borderWidth: 2,
@@ -153,23 +167,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 7,
     alignSelf: "flex-end",
-    marginRight: 25,
+    marginRight: 5,
   },
   payText: {
     fontFamily: "Avenir",
     color: "#ff7605",
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "500",
     alignSelf: "center",
   },
   hostText: {
     fontFamily: "Avenir",
-    fontSize: 22,
+    fontSize: 20,
     color: "#ff7605",
   },
   SideBySide: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "space-between",
   },
 });

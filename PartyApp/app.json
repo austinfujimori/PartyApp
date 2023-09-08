@@ -1,5 +1,13 @@
 {
   "expo": {
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow PartyApp to use your location."
+        }
+      ]
+    ],
     "name": "Whisper",
     "slug": "Whisper",
     "version": "1.0.0",

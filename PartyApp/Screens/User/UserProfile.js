@@ -64,19 +64,12 @@ const UserProfile = (props) => {
 
 
 
-          <View style={styles.iconTextFieldContainer}>
 
 
-          <Icon
-          size={25}
-          style={styles.icon}
-          name="user"
-          />
           <Text style={styles.nameText}>
             {userProfile ? userProfile.name : ""}
           </Text>
 
-          </View>
 
 
 
@@ -108,10 +101,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  iconTextFieldContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-  },
   container: {
     marginLeft: width - width / 1.075,
   },
@@ -119,7 +108,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: "Avenir",
     fontSize: 25,
-    paddingTop: 20,
+    alignContent: "flex-end",
   },
   emailText: {
     marginLeft: 10,
@@ -137,7 +126,7 @@ const styles = StyleSheet.create({
   signOutButton: {
     marginTop: 100,
     paddingVertical: 10,
-    backgroundColor: "#ff9999"
+    backgroundColor: "#ff6363"
   },
   titleContainer: {
     borderBottomColor: "#40afff",

@@ -6,47 +6,34 @@ import CreatePartyForm from "../Screens/CreateParty/CreatePartyForm";
 import PartyView from "./PartyView";
 import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
 
-import Confirm from "../Screens/Tickets/Checkout/Confirm"
 import SingleParty from "../Screens/Parties/SingleParty";
 
-import { View, Text,Dimensions, Image, TouchableOpacity } from "react-native";
+import { View, Text, Dimensions, Image, TouchableOpacity } from "react-native";
 
-
-import  LOGO from "/Users/austinfujimori/Desktop/PartyApp/PartyApp/assets/logo.png"
-
-
-
-import { TransitionPresets } from '@react-navigation/stack';
+import { TransitionPresets } from "@react-navigation/stack";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
-
-
-
-
 var { height, width } = Dimensions.get("window");
-
 
 const Stack = createStackNavigator();
 
 function MyStack(props) {
   return (
     <Stack.Navigator
-    screenOptions={{
-      headerBackTitleVisible: false,
-      headerTintColor: "#ff7575",
-      headerStyle: {
-        backgroundColor: "white",
-      },
-      headerTitleStyle: {
-        fontWeight: "500",
-        fontSize: 30,
-          fontFamily: "Avenir",
+      screenOptions={{
+        headerBackTitleVisible: false,
+        headerTintColor: "#ff7575",
+        headerStyle: {
+          backgroundColor: "white",
+        },
+        headerTitleStyle: {
+          fontWeight: "500",
+          fontSize: 25,
           color: "black",
-      },
-    }}
+        },
+      }}
     >
-      
       <Stack.Screen
         name="Main"
         component={Main}
@@ -57,7 +44,7 @@ function MyStack(props) {
           },
         }}
       />
-            <Stack.Screen
+      <Stack.Screen
         name="Party Detail"
         component={SingleParty}
         options={{
@@ -68,11 +55,8 @@ function MyStack(props) {
         }}
       />
 
-<Stack.Screen
-        name="Ticket Checkout"
-        component={TicketCheckout}
-      />
-                  <Stack.Screen
+      <Stack.Screen name="Ticket Checkout" component={TicketCheckout} />
+      <Stack.Screen
         name="Create Party Form"
         component={CreatePartyForm}
         options={{
@@ -80,36 +64,24 @@ function MyStack(props) {
           cardStyle: {
             backgroundColor: "white",
           },
-          ...TransitionPresets.ModalSlideFromBottomIOS
+          ...TransitionPresets.ModalSlideFromBottomIOS,
         }}
       />
-                        <Stack.Screen
+      <Stack.Screen
         name="Party View"
         component={PartyView}
-        options={{          headerShown: true,
+        options={{
+          headerShown: true,
           backgroundColor: "white",
-          title: "Guests",
+          title: "Guest View",
           headerShadowVisible: false,
           headerBackTitleVisible: false,
         }}
       />
-                     <Stack.Screen 
-               name = "Confirm"
-               component={Confirm}
-               options={{
-                    title: "Check In",
-                    cardStyle:{
-                         backgroundColor:"#fff"
-                    }
-               }}
-               />
     </Stack.Navigator>
   );
 }
 
 export default function MainNavigator() {
-
-  return (
-  <MyStack />
-  );
+  return <MyStack />;
 }

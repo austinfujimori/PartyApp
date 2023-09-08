@@ -2,6 +2,7 @@ import React from "react"
 import { createStackNavigator } from "@react-navigation/stack"
 
 import Tickets from "../Screens/Tickets/Tickets"
+import TicketHistoryContainer from "../Screens/Tickets/TicketHistoryContainer"
 
 
 const Stack = createStackNavigator()
@@ -23,6 +24,16 @@ function MyStack() {
                <Stack.Screen 
                name = "Tickets"
                component={Tickets}
+               options={{
+                    headerShown: false,
+                    cardStyle:{
+                         backgroundColor:"#fff"
+                    }
+               }}
+               />
+                              <Stack.Screen 
+               name = "Ticket History Container"
+               component={TicketHistoryContainer}
                options={{
                     headerShown: false,
                     cardStyle:{

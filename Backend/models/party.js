@@ -47,7 +47,15 @@ const partySchema = mongoose.Schema({
   memberCount: {
     type: Number,
     default: 0
-  }
+  },
+  longitude: {
+    type: Number,
+    default: 0
+  },
+  latitude: {
+    type: Number,
+    default: 0
+  },
 });
 
 partySchema.virtual("id").get(function () {

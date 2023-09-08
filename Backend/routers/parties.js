@@ -28,15 +28,55 @@ const storage = multer.diskStorage({
   },
 });
 
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance;
+}
+
 const uploadOptions = multer({ storage: storage });
 
-router.get(`/`, async (req, res) => {
+//featured
+router.get(`/featured/:count`, async (req, res) => {
+  const count = req.params.count ? req.params.count : 0;
+  const parties = await Party.find({ isFeatured: true }).populate("host").limit(count);
 
+  if (!parties) {
+    res.status(500).json({ success: false });
+  }
+  res.send(parties);
+});
+
+router.get(`/`, async (req, res) => {
   const partyList = await Party.find().populate("host");
 
   if (!partyList) {
     res.status(500).json({ success: false });
   }
+
+  const userLat = parseFloat(req.query.userLat); // User's latitude
+  const userLon = parseFloat(req.query.userLon); // User's longitude
+
+  // Calculate distances and add them to party objects
+  partyList.forEach((party) => {
+    const partyLat = parseFloat(party.latitude);
+    const partyLon = parseFloat(party.longitude);
+    const distance = calculateDistance(userLat, userLon, partyLat, partyLon);
+    party.distance = distance; // Add distance to party object
+  });
+
+  // Sort parties based on distance
+  partyList.sort((a, b) => a.distance - b.distance);
+
   res.send(partyList);
 });
 
@@ -48,8 +88,6 @@ router.get(`/:id`, async (req, res) => {
   }
   res.send(party);
 });
-
-
 
 router.post(`/`, uploadOptions.single("image"), async (req, res) => {
   // const category = await Category.findById(req.body.category);
@@ -76,6 +114,8 @@ router.post(`/`, uploadOptions.single("image"), async (req, res) => {
     dateCreated: req.body.dateCreated,
     dateOf: req.body.dateOf,
     memberCount: req.body.memberCount,
+    longitude: req.body.longitude,
+    latitude: req.body.latitude,
   });
 
   _party = await party.save();
@@ -115,16 +155,6 @@ router.get(`/get/count`, async (req, res) => {
   });
 });
 
-//featured
-router.get(`/get/featured/:count`, async (req, res) => {
-  const count = req.params.count ? req.params.count : 0;
-  const parties = await Party.find({ isFeatured: true }).limit(count);
-
-  if (!parties) {
-    res.status(500).json({ success: false });
-  }
-  res.send(parties);
-});
 
 router.put(
   "/gallery-images/:id",
@@ -190,14 +220,16 @@ router.put("/:id", uploadOptions.single("image"), async (req, res) => {
       dateCreated: req.body.dateCreated,
       dateOf: req.body.dateOf,
       memberCount: req.body.memberCount,
+      longitude: req.body.longitude,
+      latitude: req.body.latitude,
     },
     { new: true }
   );
 
   if (!updatedParty)
-    return res.status(500).send("the party cannot be updated!").end()
+    return res.status(500).send("the party cannot be updated!").end();
 
-  res.send(updatedParty).end()
+  res.send(updatedParty).end();
 });
 
 // router.put("/:id", uploadOptions.single("image"), async (req, res) => {
@@ -247,7 +279,9 @@ router.put("/:id", uploadOptions.single("image"), async (req, res) => {
 
 // get the party given party host
 router.get(`/party/:userid`, async (req, res) => {
-  const userParty = await Party.find({ host: req.params.userid }).populate("host")
+  const userParty = await Party.find({ host: req.params.userid }).populate(
+    "host"
+  );
 
   if (!userParty) {
     res.status(500).json({ success: false });
@@ -257,23 +291,16 @@ router.get(`/party/:userid`, async (req, res) => {
 
 // increase member count given party id
 router.put("/memberCount/:id", async (req, res) => {
-  const party = await Party.findById(
-    req.params.id
-  );
-  party.memberCount++
-  party.save()
+  const party = await Party.findById(req.params.id);
+  party.memberCount++;
+  party.save();
 });
-
-
 
 // decrease member count given party id
 router.put("/decreaseMemberCount/:id", async (req, res) => {
-  const party = await Party.findById(
-    req.params.id
-  );
-  party.memberCount--
-  party.save()
+  const party = await Party.findById(req.params.id);
+  party.memberCount--;
+  party.save();
 });
-
 
 module.exports = router;

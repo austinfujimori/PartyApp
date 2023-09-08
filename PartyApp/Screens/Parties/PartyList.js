@@ -6,15 +6,22 @@ import PartyCard from "./PartyCard";
 var { width } = Dimensions.get("window");
 
 const PartyList = (props) => {
-     const {item} = props
-     const username = props.username
+  const { item } = props;
+  const username = props.username;
   return (
-      <TouchableOpacity onPress={() => {
-        props.navigation.navigate("Party Detail", {item: item, username: username, tabRoute: "PartiesMain"})
-      }} style={{ width: width, alignItems: "center", backgroundColor: "white"}}>
-          <PartyCard {...item} username={username} navigation={props.navigation} />
-      </TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => {
+        props.navigation.navigate("Party Detail", {
+          item: item,
+          username: username,
+          tabRoute: "PartiesMain",
+        });
+      }}
+      style={{ width: width, alignItems: "center", backgroundColor: "white" }}
+    >
+      <PartyCard {...item} username={username} navigation={props.navigation} />
+    </TouchableOpacity>
   );
 };
 
-export default PartyList 
+export default PartyList;

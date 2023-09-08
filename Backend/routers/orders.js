@@ -212,4 +212,20 @@ router.put("/hostConfirm/:id", async (req, res) => {
   res.send(order);
 });
 
+//change status back to pending
+router.put("/pending/:id", async (req, res) => {
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: "Pending",
+    },
+    { new: true }
+  );
+  console.log(order)
+
+  if (!order) return res.status(404).send("host cannot confirm");
+
+  res.send(order);
+});
+
 module.exports = router;

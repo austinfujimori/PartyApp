@@ -5,14 +5,15 @@ import baseURL from "../../assets/common/baseUrl"
 
 export const SET_CURRENT_USER = "SET_CURRENT_USER"
 
-export const checkLoginStatus = async () => {
-     //CHECK if JWT is present
-     const token = await AsyncStorage.getItem("jwt")
-     if (token) {
-          //AUthenticate with jWT
-          alert(token)
+     export const checkLoginStatus = async (dispatch) => {
+          //CHECK if JWT is present
+          const token = await AsyncStorage.getItem("jwt")
+          if (token) {
+               //AUthenticate with jWT
+               const decoded = jwt_decode(token)
+               dispatch(setCurrentUser(decoded))
+          }
      }
-}
 
 export const loginUser = (user, dispatch) => {
      fetch(`${baseURL}users/login`, {
@@ -43,7 +44,7 @@ export const loginUser = (user, dispatch) => {
           Toast.show({
                topOffset: 60,
                type: "error",
-               text1: "Provide correct credentials",
+               text1: "Incorrect username or password.",
           })
 
           logoutUser(dispatch)

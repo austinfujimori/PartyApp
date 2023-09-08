@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Text} from "react-native";
+import { View, Text } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon2 from "react-native-vector-icons/Fontisto";
 import AuthGlobal from "../Context/store/AuthGlobal";
@@ -10,7 +10,7 @@ import PartiesNavigator from "./PartiesNavigator";
 import TicketsNavigator from "./TicketsNavigator";
 import CreatePartyNavigator from "./CreatePartyNavigator";
 import UserNavigator from "./UserNavigator";
-
+import NotificationsNavigator from "./NotificationsNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,8 +27,11 @@ const Main = () => {
         tabBarStyle: {
           backgroundColor: "white",
           borderTopWidth: 1,
-          borderTopColor: "#C3C3C3",
+          borderTopColor: "rgb(220,220,220)",
           height: 95,
+        },
+        cardStyle: {
+          backgroundColor: "#fff",
         },
       }}
     >
@@ -44,11 +47,8 @@ const Main = () => {
               size={36}
             />
           ),
-          tabBarLabel: ({color, size}) => (
-            <Text style={{color: 
-              color,
-              fontSize: 12
-            }}>Parties</Text>
+          tabBarLabel: ({ color, size }) => (
+            <Text style={{ color: color, fontSize: 12 }}>Parties</Text>
           ),
         }}
       />
@@ -58,24 +58,21 @@ const Main = () => {
         component={CreatePartyNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon name="add" color={
-
-              (color == "#ff7605") ? (
-              "#ff7575") :
-              (
-                color
-              )
-            } size={50} />
-          ), 
-          tabBarLabel: ({color, size}) => (
-            <Text style={{color: 
-              (color == "#ff7605") ? (
-                "#ff7575") :
-                (
-                  color
-                ),
-                fontSize: 12
-            }}>Create Party</Text>
+            <Icon
+              name="add"
+              color={color == "#ff7605" ? "#ff7575" : color}
+              size={50}
+            />
+          ),
+          tabBarLabel: ({ color, size }) => (
+            <Text
+              style={{
+                color: color == "#ff7605" ? "#ff7575" : color,
+                fontSize: 12,
+              }}
+            >
+              Host
+            </Text>
           ),
         }}
       />
@@ -85,62 +82,69 @@ const Main = () => {
         component={TicketsNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon2 name="ticket" color={
-
-              (color == "#ff7605") ? (
-                "#2dc27c") :
-                (
-                  color
-                )
-            } size={30} />
+            <Icon2
+              name="ticket"
+              color={color == "#ff7605" ? "#2dc27c" : color}
+              size={30}
+            />
           ),
-          tabBarLabel: ({color, size}) => (
-            <Text style={{color: 
-              
-              (color == "#ff7605") ? (
-                "#2dc27c") :
-                (
-                  color
-                ),
-              
-              fontSize: 12
-            }}>Tickets</Text>
+          tabBarLabel: ({ color, size }) => (
+            <Text
+              style={{
+                color: color == "#ff7605" ? "#2dc27c" : color,
+
+                fontSize: 12,
+              }}
+            >
+              Tickets
+            </Text>
           ),
         }}
       />
-
-      {/*
-      if user is admin, then this screen pops up
-
-      {context.stateUser.user.isAdmin == true ? 
-      (<Tab.Screen/>): null}
-      
-      */}
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsNavigator}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon
+              name="notifications"
+              color={color == "#ff7605" ? "#40afff" : color}
+              size={30}
+            />
+          ),
+          tabBarLabel: ({ color, size }) => (
+            <Text
+              style={{
+                color: color == "#ff7605" ? "#40afff" : color,
+                fontSize: 12,
+              }}
+            >
+              Notifications
+            </Text>
+          ),
+        }}
+      />
 
       <Tab.Screen
         name="Profile"
         component={UserNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon name="person-circle-outline" color={
-
-              (color == "#ff7605") ? (
-                "#40afff") :
-                (
-                  color
-                )
-
-            } size={37} />
+            <Icon
+              name="person-circle-outline"
+              color={color == "#ff7605" ? "#40afff" : color}
+              size={37}
+            />
           ),
-          tabBarLabel: ({color, size}) => (
-            <Text style={{color: 
-              (color == "#ff7605") ? (
-                "#40afff") :
-                (
-                  color
-                ),
-              fontSize: 12
-            }}>Profile</Text>
+          tabBarLabel: ({ color, size }) => (
+            <Text
+              style={{
+                color: color == "#ff7605" ? "#40afff" : color,
+                fontSize: 12,
+              }}
+            >
+              Profile
+            </Text>
           ),
         }}
       />

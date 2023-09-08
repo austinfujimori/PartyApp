@@ -9,6 +9,8 @@ import {
   Dimensions,
   Button,
   Alert,
+  TextInput,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FormContainer from "../../../Shared/Form/FormContainer";
@@ -25,8 +27,6 @@ import AuthGlobal from "../../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-
-
 const { width, height } = Dimensions.get("window");
 
 const methods = [
@@ -41,12 +41,41 @@ const paymentCards = [
 ];
 
 const TicketCheckout = (props) => {
-
-
   const [token, setToken] = useState();
 
   const context = useContext(AuthGlobal);
 
+  //PAYPAL
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  //PAYPAL
+  const handlePayment = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await axios.post(
+        `${baseURL}paypal/payout`,
+        {
+          receiverEmail: email,
+          amount: amount,
+        }
+      );
+
+      if (response.data && response.data.result) {
+        setMessage("Payment successful!");
+      } else {
+        setMessage("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      setMessage("An error occurred. Please try again later.");
+    }
+
+    setLoading(false);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -65,34 +94,26 @@ const TicketCheckout = (props) => {
   const username = props.route.params.username;
 
   //PARTY OBJECT
-  const _id = props.route.params._id;
-  const host = props.route.params.host;
   const memberCount = props.route.params.memberCount;
-  const description = props.route.params.description;
-  const dateOf = props.route.params.dateOf;
-  const price = props.route.params.price;
-  const image = props.route.params.image;
-  const capacity = props.route.params.capacity;
-  const address = props.route.params.address;
 
   const partyObject = {
-    _id: _id,
-    host: host,
+    _id: props.route.params._id,
+    host: props.route.params.host,
     memberCount: memberCount,
-    description: description,
-    dateOf: dateOf,
-    price: price,
-    image: image,
-    capacity: capacity,
-    address: address,
+    description: props.route.params.description,
+    dateOf: props.route.params.dateOf,
+    price: props.route.params.price,
+    image: props.route.params.image,
+    capacity: props.route.params.capacity,
+    address: props.route.params.address,
+    longitude: props.route.params.longitude,
+    latitude: props.route.params.latitude,
   };
 
   const [selected, setSelected] = useState();
   const [card, setCard] = useState();
 
   const checkOut = () => {
-
-
     // update party member count by + 1
 
     const partyConfig = {
@@ -157,18 +178,9 @@ const TicketCheckout = (props) => {
     props.navigation.navigate("Tickets");
   };
 
-
-
   return (
     <View style={styles.container}>
-
-      <TouchableOpacity style={styles.confirmButton} onPress={buy}>
-        <Text style={styles.confirmText}>Check Out</Text>
-      </TouchableOpacity>
-
-
-
-      {/* <Text style={styles.title}>Payment Method</Text>
+      <Text style={styles.title}>Payment Method</Text>
       <RadioForm
         dataSource={methods}
         itemShowKey="name"
@@ -199,8 +211,27 @@ const TicketCheckout = (props) => {
       ) : null}
 
       <TouchableOpacity style={styles.confirmButton} onPress={() => checkOut()}>
-        <Text style={styles.confirmText}>Confirm</Text>
-      </TouchableOpacity> */}
+        <Text style={styles.confirmText}>Pay</Text>
+      </TouchableOpacity>
+
+      <View style={{ padding: 20 }}>
+            <TextInput
+                placeholder="Recipient's Email"
+                value={email}
+                onChangeText={setEmail}
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+            />
+            <TextInput
+                placeholder="Amount"
+                value={amount}
+                onChangeText={setAmount}
+                keyboardType="numeric"
+                style={{ borderBottomWidth: 1, marginBottom: 20 }}
+            />
+            <Button title="Pay" onPress={handlePayment} disabled={loading} />
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            {message && <Text>{message}</Text>}
+        </View>
     </View>
   );
 };
