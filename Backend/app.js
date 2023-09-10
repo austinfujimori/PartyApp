@@ -23,7 +23,7 @@ const ordersRouter = require("./routers/orders");
 const pastOrdersRouter = require("./routers/pastOrders")
 const pastPartiesRouter = require("./routers/pastParties")
 const authJwt = require("./helpers/jwt");
-const paypalRoutes = require('./routers/paypalRoutes');
+const paypalRoutes = require('./routers/paypal');
 
 
 //Middleware
@@ -42,7 +42,7 @@ app.use(`${api}/users`, usersRouter);
 app.use(`${api}/orders`, ordersRouter);
 app.use(`${api}/pastOrders`, pastOrdersRouter);
 app.use(`${api}/pastParties`, pastPartiesRouter);
-app.use('/api/paypal', paypalRoutes);
+app.use(`${api}/paypal`, paypalRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)

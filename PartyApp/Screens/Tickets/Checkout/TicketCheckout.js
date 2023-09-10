@@ -10,7 +10,7 @@ import {
   Button,
   Alert,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FormContainer from "../../../Shared/Form/FormContainer";
@@ -48,33 +48,33 @@ const TicketCheckout = (props) => {
   //PAYPAL
   const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   //PAYPAL
   const handlePayment = async () => {
-    setLoading(true);
-    setMessage("");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
     try {
       const response = await axios.post(
         `${baseURL}paypal/payout`,
         {
-          receiverEmail: email,
+          email: email,
           amount: amount,
-        }
+        }, config
       );
 
-      if (response.data && response.data.result) {
-        setMessage("Payment successful!");
+      if (response.data.success) {
+        Alert.alert("Payment successful!");
       } else {
-        setMessage("Payment failed. Please try again.");
+        Alert.alert("Payment failed. Please try again.");
       }
     } catch (error) {
-      setMessage("An error occurred. Please try again later.");
+      console.error("An error occurred:", error);
+      Alert.alert("Error during payment. Please try again.");
     }
-
-    setLoading(false);
   };
 
   useFocusEffect(
@@ -214,41 +214,27 @@ const TicketCheckout = (props) => {
         <Text style={styles.confirmText}>Pay</Text>
       </TouchableOpacity>
 
-      <View style={{ padding: 20 }}>
-            <TextInput
-                placeholder="Recipient's Email"
-                value={email}
-                onChangeText={setEmail}
-                style={{ borderBottomWidth: 1, marginBottom: 10 }}
-            />
-            <TextInput
-                placeholder="Amount"
-                value={amount}
-                onChangeText={setAmount}
-                keyboardType="numeric"
-                style={{ borderBottomWidth: 1, marginBottom: 20 }}
-            />
-            <Button title="Pay" onPress={handlePayment} disabled={loading} />
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
-            {message && <Text>{message}</Text>}
-        </View>
+      <View>
+        <Text>Recipient Email:</Text>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Recipient's Email"
+          keyboardType="email-address"
+        />
+
+        <Text>Amount:</Text>
+        <TextInput
+          value={amount}
+          onChangeText={setAmount}
+          placeholder="Payment Amount"
+          keyboardType="numeric"
+        />
+
+        <Button title="Pay" onPress={handlePayment} />
+      </View>
     </View>
   );
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    addItemToTickets: (party) =>
-      dispatch(actions.addTicket({ quantity: 1, party })),
-  };
-};
-
-const mapStateToProps = (state) => {
-  const { ticketsItems } = state;
-
-  return {
-    ticketsItems: ticketsItems,
-  };
 };
 
 const styles = StyleSheet.create({
@@ -299,4 +285,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(TicketCheckout);
+export default TicketCheckout;
