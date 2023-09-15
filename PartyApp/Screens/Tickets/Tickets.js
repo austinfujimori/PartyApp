@@ -42,6 +42,36 @@ const Tickets = (props) => {
   const [modalPartyId, setModalPartyId] = useState();
   const [modalMemberCount, setModalMemberCount] = useState();
 
+  //PAYPAL
+  const handleDelete = async (price) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    //COMPANY –> SENDER (user)
+    try {
+      const response = await axios.post(
+        `${baseURL}paypal/payout`,
+        {
+          email: userProfile.email,
+          amount: price,
+        },
+        config
+      );
+
+      if (response.data.success) {
+        Alert.alert("Payment successful!");
+      } else {
+        Alert.alert("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      Alert.alert("Error during payment. Please try again.");
+    }
+  };
+
   useEffect(() => {
     //GET USER TOKEN
     AsyncStorage.getItem("jwt")
@@ -72,6 +102,7 @@ const Tickets = (props) => {
             headers: { Authorization: `Bearer ${res}` },
           })
           .then((user) => {
+            setUserProfile(user.data)
             //get ticketList from database
             axios
               .get(`${baseURL}orders/userorders/${user.data._id}`, {
@@ -92,7 +123,7 @@ const Tickets = (props) => {
     getTickets();
   };
 
-  const deleteOrder = (id, partyID, memberCount) => {
+  const deleteOrder = (id, partyID, memberCount, price) => {
     //ALERT
     Alert.alert(
       "Are you sure you want to remove this ticket?",
@@ -102,6 +133,10 @@ const Tickets = (props) => {
         {
           text: "Delete",
           onPress: () => {
+
+            //PAYPAL
+            handleDelete(price)
+            
             //delete order
             axios
               .delete(`${baseURL}orders/${id}`, {
@@ -228,7 +263,9 @@ const Tickets = (props) => {
                   <View style={{ height: 70 }}></View>
                   <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => props.navigation.navigate("Ticket History Container")}
+                    onPress={() =>
+                      props.navigation.navigate("Ticket History Container")
+                    }
                   >
                     <Icon
                       style={{ alignSelf: "center" }}
@@ -240,13 +277,11 @@ const Tickets = (props) => {
                 </View>
 
                 <View>
-
-
-                <View style={styles.titleButtonContainer}>
-                  <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Tickets</Text>
+                  <View style={styles.titleButtonContainer}>
+                    <View style={styles.titleContainer}>
+                      <Text style={styles.title}>Tickets</Text>
+                    </View>
                   </View>
-                </View>
 
                   {ticketList.map((data) => {
                     return (
@@ -301,11 +336,6 @@ const Tickets = (props) => {
                                     data.party.memberCount
                                   )
                                 }
-                                // onPress={() =>
-                                //   props.navigation.navigate("Confirm", {
-                                //     order: data,
-                                //   })
-                                // }
                                 style={[
                                   styles.buttonContainer,
                                   { borderColor: "#2dc27c", marginBottom: 10 },
@@ -318,7 +348,8 @@ const Tickets = (props) => {
                                   deleteOrder(
                                     data._id,
                                     data.party._id,
-                                    data.party.memberCount
+                                    data.party.memberCount,
+                                    data.party.price
                                   )
                                 }
                                 style={[
@@ -346,33 +377,29 @@ const Tickets = (props) => {
               />
             </>
           ) : (
-            <ScrollView
-            stickyHeaderIndices={[0]}
-            style={styles.listContainer}
-          >
-            <View
-              style={{ marginBottom: -140, marginLeft: width - 50 - 60 }}
-            >
-              <View style={{ height: 70 }}></View>
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => props.navigation.navigate("Ticket History Container")}
-              >
-                <Icon
-                  style={{ alignSelf: "center" }}
-                  name="history"
-                  color="white"
-                  size={40}
-                />
-              </TouchableOpacity>
-            </View>
-
-
-            <View style={styles.titleButtonContainer}>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>Tickets</Text>
+            <ScrollView stickyHeaderIndices={[0]} style={styles.listContainer}>
+              <View style={{ marginBottom: -140, marginLeft: width - 50 - 60 }}>
+                <View style={{ height: 70 }}></View>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() =>
+                    props.navigation.navigate("Ticket History Container")
+                  }
+                >
+                  <Icon
+                    style={{ alignSelf: "center" }}
+                    name="history"
+                    color="white"
+                    size={40}
+                  />
+                </TouchableOpacity>
               </View>
-            </View>
+
+              <View style={styles.titleButtonContainer}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>Tickets</Text>
+                </View>
+              </View>
 
               <Text style={styles.noPartyText}>
                 No parties have been added yet.
@@ -524,7 +551,7 @@ const styles = StyleSheet.create({
     marginTop: height / 12,
     marginHorizontal: width - width / 1.1,
     justifyContent: "space-between",
-    marginBottom: 20
+    marginBottom: 20,
   },
 });
 

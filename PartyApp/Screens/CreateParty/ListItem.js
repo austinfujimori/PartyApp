@@ -33,7 +33,7 @@ const ListItem = (props) => {
 
             {
               screen: "Orders",
-              params: { token: props.token, thisParty: props._id },
+              params: { token: props.token, thisParty: props },
             }
           )
         }

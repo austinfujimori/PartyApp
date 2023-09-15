@@ -4,6 +4,7 @@ import Main from "./Main";
 
 import CreatePartyForm from "../Screens/CreateParty/CreatePartyForm";
 import PartyView from "./PartyView";
+
 import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
 
 import SingleParty from "../Screens/Parties/SingleParty";
@@ -56,6 +57,7 @@ function MyStack(props) {
       />
 
       <Stack.Screen name="Ticket Checkout" component={TicketCheckout} />
+
       <Stack.Screen
         name="Create Party Form"
         component={CreatePartyForm}

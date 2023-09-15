@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import PartyContainer from "../Screens/Parties/PartyContainer";
 
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import TicketCheckout from "../Screens/Tickets/Checkout/TicketCheckout";
 import PartyMapView from "../Screens/Parties/PartyMapView";
 
 const Stack = createStackNavigator();

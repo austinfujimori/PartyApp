@@ -30,25 +30,75 @@ const Orders = (props) => {
   const token = props.route.params.token;
   const thisParty = props.route.params.thisParty;
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     getOrders();
-  //     return () => {
-  //       setOrderList();
-  //     };
-  //   }, [])
-  // );
+  //PAYPAL
+  const handlePayment = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    //COMPANY –> RECEIVER (host)
+    try {
+      const response = await axios.post(
+        `${baseURL}paypal/payout`,
+        {
+          email: thisParty.host.email,
+          amount: thisParty.price,
+        },
+        config
+      );
+
+      if (response.data.success) {
+        Alert.alert("Payment successful!");
+      } else {
+        Alert.alert("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      Alert.alert("Error during payment. Please try again.");
+    }
+  };
+
+  //PAYPAL
+  const handleDelete = async (guestEmail) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    //COMPANY –> SENDER (guest)
+    try {
+      const response = await axios.post(
+        `${baseURL}paypal/payout`,
+        {
+          email: guestEmail,
+          amount: thisParty.price,
+        },
+        config
+      );
+
+      if (response.data.success) {
+        Alert.alert("Payment successful!");
+      } else {
+        Alert.alert("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      Alert.alert("Error during payment. Please try again.");
+    }
+  };
 
   const getOrders = () => {
     const config = {
       headers: {
-        // "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     };
 
     axios
-      .get(`${baseURL}orders/partyOrders/${thisParty}`, config)
+      .get(`${baseURL}orders/partyOrders/${thisParty._id}`, config)
       .then((x) => {
         setOrderList(x.data);
       })
@@ -66,6 +116,9 @@ const Orders = (props) => {
 
   // confirm
   const confirmOrder = (id, order) => {
+    //PAYPAL
+    handlePayment();
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -128,7 +181,7 @@ const Orders = (props) => {
     getOrders();
   };
 
-  const deleteOrder = (id, partyID, memberCount) => {
+  const deleteOrder = (id, partyID, memberCount, guestEmail) => {
     //ALERT
     Alert.alert(
       "Are you sure you want to remove this user?",
@@ -138,6 +191,11 @@ const Orders = (props) => {
         {
           text: "Delete",
           onPress: () => {
+
+            //PAYPAL
+            handleDelete(guestEmail)
+
+
             //delete order
             axios
               .delete(`${baseURL}orders/${id}`, {
@@ -217,7 +275,8 @@ const Orders = (props) => {
                                   deleteOrder(
                                     data._id,
                                     data.party._id,
-                                    data.party.memberCount
+                                    data.party.memberCount,
+                                    data.user.email,
                                   )
                                 }
                                 style={styles.removeButton}
@@ -253,7 +312,8 @@ const Orders = (props) => {
                                   deleteOrder(
                                     data._id,
                                     data.party._id,
-                                    data.party.memberCount
+                                    data.party.memberCount,
+                                    data.user.email
                                   )
                                 }
                                 style={[styles.removeButton]}

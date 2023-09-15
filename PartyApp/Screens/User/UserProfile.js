@@ -75,6 +75,7 @@ const UserProfile = (props) => {
 
 
 
+
           <Text style={styles.emailText}>
             {userProfile ? userProfile.email : ""}
           </Text>

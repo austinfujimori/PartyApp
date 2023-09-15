@@ -71,11 +71,12 @@ const SignUp = (props) => {
         enableOnAndroid={true}
       >
         <Text style={styles.title}>Sign Up</Text>
+
         <Input
-          placeholder={"Email"}
-          name={"email"}
-          id={"email"}
-          onChangeText={(text) => setEmail(text.toLowerCase())}
+          placeholder={"Name"}
+          name={"name"}
+          id={"name"}
+          onChangeText={(text) => setName(text)}
           borderColor={"white"}
           backgroundColor={"#616161"}
           placeholderTextColor={"white"}
@@ -83,10 +84,10 @@ const SignUp = (props) => {
         />
 
         <Input
-          placeholder={"Name"}
-          name={"name"}
-          id={"name"}
-          onChangeText={(text) => setName(text)}
+          placeholder={"PayPal Email"}
+          name={"email"}
+          id={"email"}
+          onChangeText={(text) => setEmail(text.toLowerCase())}
           borderColor={"white"}
           backgroundColor={"#616161"}
           placeholderTextColor={"white"}

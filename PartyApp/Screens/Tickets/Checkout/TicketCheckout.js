@@ -25,6 +25,7 @@ import * as actions from "../../../Redux/Actions/ticketsActions";
 import baseURL from "../../../assets/common/baseUrl";
 import AuthGlobal from "../../../Context/store/AuthGlobal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import axios from "axios";
 
 const { width, height } = Dimensions.get("window");
@@ -42,40 +43,7 @@ const paymentCards = [
 
 const TicketCheckout = (props) => {
   const [token, setToken] = useState();
-
   const context = useContext(AuthGlobal);
-
-  //PAYPAL
-  const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState("");
-
-  //PAYPAL
-  const handlePayment = async () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    try {
-      const response = await axios.post(
-        `${baseURL}paypal/payout`,
-        {
-          email: email,
-          amount: amount,
-        }, config
-      );
-
-      if (response.data.success) {
-        Alert.alert("Payment successful!");
-      } else {
-        Alert.alert("Payment failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-      Alert.alert("Error during payment. Please try again.");
-    }
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -115,7 +83,6 @@ const TicketCheckout = (props) => {
 
   const checkOut = () => {
     // update party member count by + 1
-
     const partyConfig = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -215,23 +182,6 @@ const TicketCheckout = (props) => {
       </TouchableOpacity>
 
       <View>
-        <Text>Recipient Email:</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Recipient's Email"
-          keyboardType="email-address"
-        />
-
-        <Text>Amount:</Text>
-        <TextInput
-          value={amount}
-          onChangeText={setAmount}
-          placeholder="Payment Amount"
-          keyboardType="numeric"
-        />
-
-        <Button title="Pay" onPress={handlePayment} />
       </View>
     </View>
   );
