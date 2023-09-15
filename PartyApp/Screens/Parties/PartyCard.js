@@ -12,7 +12,6 @@ import {
 
 import Toast from "react-native-toast-message";
 import { connect } from "react-redux";
-import * as actions from "../../Redux/Actions/ticketsActions";
 
 import Moment from "moment";
 
@@ -164,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(null, mapDispatchToProps)(PartyCard);
+export default PartyCard;

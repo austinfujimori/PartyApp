@@ -13,7 +13,6 @@ import {
 } from "react-native";
 
 import { connect } from "react-redux";
-import * as actions from "../../Redux/Actions/ticketsActions";
 
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -555,4 +554,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Tickets);
+export default Tickets;

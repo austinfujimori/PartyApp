@@ -20,7 +20,6 @@ import RadioForm from "react-native-radio-form";
 import { connect } from "react-redux";
 
 import Toast from "react-native-toast-message";
-import * as actions from "../../../Redux/Actions/ticketsActions";
 
 import baseURL from "../../../assets/common/baseUrl";
 import AuthGlobal from "../../../Context/store/AuthGlobal";
