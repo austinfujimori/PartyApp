@@ -17,16 +17,32 @@ const Auth = props => {
      })
      const [showChild, setShowChild] = useState(false)
 
+     // useEffect(() => {
+     //      setShowChild(true)
+          
+     //      if(AsyncStorage.jwt) {
+     //           const decoded = AsyncStorage.jwt ? AsyncStorage.jwt : ""
+     //           if (setShowChild) {
+     //                dispatch(setCurrentUser(jwt_decode(decoded)))
+     //           }
+     //      }
+     //      return () => setShowChild(false)
+     // }, [])
+
      useEffect(() => {
-          setShowChild(true)
-          if(AsyncStorage.jwt) {
-               const decoded = AsyncStorage.jwt ? AsyncStorage.jwt : ""
-               if (setShowChild) {
-                    dispatch(setCurrentUser(jwt_decode(decoded)))
-               }
-          }
-          return () => setShowChild(false)
-     }, [])
+          setShowChild(true);
+          const checkToken = async () => {
+              const token = await AsyncStorage.getItem("jwt");
+              if (token) {
+                  const decoded = jwt_decode(token);
+                  if (setShowChild) {
+                      dispatch(setCurrentUser(decoded));
+                  }
+              }
+          };
+          checkToken();
+          return () => setShowChild(false);
+      }, []);
 
      if (!showChild) {
           return null

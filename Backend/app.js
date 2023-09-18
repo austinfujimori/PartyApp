@@ -5,8 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const errorHandler = require("./helpers/error-handler")
 
-app.use(cors());
-app.options("*", cors());
+
 
 // require("dotenv/config")
 const dotenv = require("dotenv");
@@ -28,6 +27,8 @@ const paypalRoutes = require('./routers/paypal');
 
 //Middleware
 //replace body parser with express.json()
+app.use(cors());
+app.options("*", cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authJwt());

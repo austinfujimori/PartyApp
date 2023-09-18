@@ -4,7 +4,7 @@
   "description": "backend of whisper",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -27,7 +27,7 @@
     "react-native-webview": "^13.6.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20",
+    "nodemon": "^3.0.1",
     "prettier": "^2.8.8"
   }
 }
