@@ -76,7 +76,6 @@ const CreatePartyForm = (props) => {
   const [locked, setLocked] = useState(false);
 
   const onChangeDate = (event, selectedDate) => {
-    console.log(selectedDate)
     const currentDate = selectedDate;
     setShow(false);
     setDateOf(currentDate);

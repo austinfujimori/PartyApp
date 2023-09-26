@@ -5,17 +5,6 @@ import baseURL from "../../assets/common/baseUrl";
 
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 
-// export const checkLoginStatus = async (dispatch) => {
-//   //CHECK if JWT is present
-//   const token = await AsyncStorage.getItem("jwt");
-//   console.log(token)
-//   if (token) {
-//     //AUthenticate with jWT
-//     const decoded = jwt_decode(token);
-//     dispatch(setCurrentUser(decoded));
-//   }
-// };
-
 export const checkLoginStatus = async (dispatch) => {
   // CHECK if JWT is present
   const token = await AsyncStorage.getItem("jwt");

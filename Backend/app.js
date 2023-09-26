@@ -27,7 +27,10 @@ const paypalRoutes = require('./routers/paypal');
 
 //Middleware
 //replace body parser with express.json()
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.options("*", cors());
 app.use(express.json());
 app.use(morgan("tiny"));
