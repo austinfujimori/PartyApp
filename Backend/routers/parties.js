@@ -3,7 +3,17 @@ const express = require("express");
 // const { Category } = require("../models/category");
 const router = require("express").Router();
 const mongoose = require("mongoose");
-const multer = require("multer");
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
+});
 
 const FILE_TYPE_MAP = {
   "image/png": "png",
@@ -11,21 +21,24 @@ const FILE_TYPE_MAP = {
   "image/jpg": "jpg",
 };
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const isValid = FILE_TYPE_MAP[file.mimetype];
-    let uploadError = new Error("invalid image type");
 
-    if (isValid) {
-      uploadError = null;
-    }
-    cb(uploadError, "public/uploads");
-  },
-  filename: function (req, file, cb) {
-    const fileName = file.originalname.split(" ").join("-");
-    const extension = FILE_TYPE_MAP[file.mimetype];
-    cb(null, `${fileName}-${Date.now()}.${extension}`);
-  },
+const upload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: "partyappbucket",
+      acl: 'public-read',
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          const fileName = file.originalname.split(" ").join("-");
+          const extension = FILE_TYPE_MAP[file.mimetype];
+          cb(null, `parties/${fileName}-${Date.now()}.${extension}`);
+      }
+  }),
+  fileFilter: function (req, file, cb) {
+      const isValid = !!FILE_TYPE_MAP[file.mimetype];
+      let error = isValid ? null : new Error('Invalid Mime Type, only JPEG, JPG and PNG ');
+      cb(error, isValid);
+  }
 });
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -43,7 +56,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
-const uploadOptions = multer({ storage: storage });
+// const uploadOptions = multer({ storage: storage });
 
 //featured
 router.get(`/featured/:count`, async (req, res) => {
@@ -89,26 +102,19 @@ router.get(`/:id`, async (req, res) => {
   res.send(party);
 });
 
-router.post(`/`, uploadOptions.single("image"), async (req, res) => {
-  // const category = await Category.findById(req.body.category);
-  // if (!category) return res.status(400).send("invalid categry");
-
-  // const fileName = req.file.fileName
-  // const basePath = `${req.protocol}://${req.get("host")}/public/upload/`
-
+router.post(`/`, upload.single("image"), async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).send("No image in the request");
 
-  const fileName = file.filename;
-  const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+  // image will have the S3 URL now
+  const imagePath = file.location;
 
   const party = new Party({
     host: req.body.host,
-    image: `${basePath}${fileName}`,
+    image: imagePath,
     description: req.body.description,
     address: req.body.address,
     price: req.body.price,
-    // category: req.body.category,
     capacity: req.body.capacity,
     isFeatured: req.body.isFeatured,
     dateCreated: req.body.dateCreated,
@@ -156,9 +162,10 @@ router.get(`/get/count`, async (req, res) => {
 });
 
 
+
 router.put(
   "/gallery-images/:id",
-  uploadOptions.array("images", 20),
+  upload.array("images", 20),
   async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).send("Invalid Party Id");
@@ -187,8 +194,7 @@ router.put(
   }
 );
 
-//new
-router.put("/:id", uploadOptions.single("image"), async (req, res) => {
+router.put("/:id", upload.single("image"), async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(400).send("Invalid Product Id");
   }
@@ -232,50 +238,6 @@ router.put("/:id", uploadOptions.single("image"), async (req, res) => {
   res.send(updatedParty).end();
 });
 
-// router.put("/:id", uploadOptions.single("image"), async (req, res) => {
-//   if (!mongoose.isValidObjectId(req.params.id)) {
-//     return res.status(400).send("Invalid Party Id");
-//   }
-//   // const category = await Category.findById(req.body.category);
-//   // if (!category) return res.status(400).send("Invalid Category");
-//   const file = req.file;
-
-//   const party = await Party.findById(req.params.id);
-//   if (!party) return res.status(400).send("Invalid Party!");
-
-//   let imagepath;
-
-//   if (file) {
-//     const fileName = file.filename;
-//     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-//     imagepath = `${basePath}${fileName}`;
-//   } else {
-//     imagepath = party.image;
-//   }
-
-//   const updatedParty = await Party.findByIdAndUpdate(
-//     req.params.id,
-//     {
-//       host: req.body.host,
-//       image: imagepath,
-//       description: req.body.description,
-//       address: req.body.address,
-//       price: req.body.price,
-//       // category: req.body.category,
-//       capacity: req.body.capacity,
-//       isFeatured: req.body.isFeatured,
-//       dateCreated: req.body.dateCreated,
-//       dateOf: req.body.dateOf,
-//       memberCount: req.body.memberCount
-//     },
-//     { new: true }
-//   );
-
-//   if (!updatedParty)
-//     return res.status(500).send("the party cannot be updated!");
-
-//   res.send(updatedParty);
-// });
 
 // get the party given party host
 router.get(`/party/:userid`, async (req, res) => {

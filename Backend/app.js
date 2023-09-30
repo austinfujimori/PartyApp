@@ -5,8 +5,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const errorHandler = require("./helpers/error-handler")
 
-
-
 // require("dotenv/config")
 const dotenv = require("dotenv");
 dotenv.config();
@@ -36,7 +34,9 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authJwt());
 app.use(errorHandler)
-app.use("/public/uploads", express.static(__dirname + "/public/uploads"))
+// app.use("/public/uploads", express.static(__dirname + "/public/uploads"))
+
+
 
 
 
